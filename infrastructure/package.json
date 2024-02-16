@@ -1,0 +1,30 @@
+{
+  "name": "@tweet-fleet/infrastructure",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "app": "./dist/src/app.js"
+  },
+  "scripts": {
+    "build:clean": "rimraf dist",
+    "build": "tsc --build tsconfig.json",
+    "deploy": "cdk deploy",
+    "deploy:all": "cdk deploy --all --require-approval never",
+    "deploy:prepare": "cdk bootstrap --require-approval never",
+    "destroy": "cdk destroy",
+    "destroy:all": "npm run destroy -- --all --require-approval never"
+  },
+  "dependencies": {
+    "rest-api": "*",
+    "@aws-cdk/aws-lambda": "^1.156.1",
+    "aws-cdk-lib": "2.47.0",
+    "constructs": "^10.0.0",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.97",
+    "@types/node": "10.17.27",
+    "@types/source-map-support": "^0.5.6",
+    "aws-cdk": "2.47.0"
+  }
+}
