@@ -5,7 +5,6 @@ import config from '../../vitest.config.js';
 
 export default mergeConfig(config, defineConfig({
   test: {
-    setupFiles: ['./tests/setup.ts'],
     pool: 'forks',
     poolOptions: {
       forks: {
