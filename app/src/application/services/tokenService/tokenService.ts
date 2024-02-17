@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { OperationNotValidError } from '../../../common/errors/operationNotValidError.js';
 
 export interface TokenServiceConfig {
   readonly jwtSecret: string;
@@ -31,15 +30,8 @@ export class TokenService {
   public verifyToken(payload: VerifyTokenPayload): Record<string, string> {
     const { token } = payload;
 
-    try {
-      const data = jwt.verify(token, this.config.jwtSecret, { algorithms: ['HS512'] });
+    const data = jwt.verify(token, this.config.jwtSecret, { algorithms: ['HS512'] });
 
-      return data as Record<string, string>;
-    } catch (error) {
-      throw new OperationNotValidError({
-        reason: 'Token is not valid.',
-        token,
-      });
-    }
+    return data as Record<string, string>;
   }
 }
