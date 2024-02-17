@@ -15,16 +15,15 @@
     "destroy:all": "npm run destroy -- --all --require-approval never"
   },
   "dependencies": {
-    "rest-api": "*",
-    "@aws-cdk/aws-lambda": "^1.156.1",
-    "aws-cdk-lib": "2.47.0",
-    "constructs": "^10.0.0",
+    "@aws-cdk/aws-lambda": "^1.204.0",
+    "aws-cdk-lib": "2.128.0",
+    "constructs": "^10.3.0",
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.97",
-    "@types/node": "10.17.27",
-    "@types/source-map-support": "^0.5.6",
-    "aws-cdk": "2.47.0"
+    "@types/aws-lambda": "^8.10.133",
+    "@types/node": "20.11.19",
+    "@types/source-map-support": "^0.5.10",
+    "aws-cdk": "2.128.0"
   }
 }
