@@ -15,3 +15,4 @@ services:
       DOCKER_HOST: unix:///var/run/docker.sock
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
+      - './scripts/bootstrap-localstack.sh:/etc/localstack/init/ready.d/bootstrap-localstack.sh'

@@ -12,8 +12,9 @@ export interface FindUserPayload {
 }
 
 export class UserRepository {
-  private readonly dynamoDbClient = new DynamoDBClient({});
   private readonly tableName = 'users';
+
+  public constructor(private readonly dynamoDbClient: DynamoDBClient) {}
 
   public async createUser(payload: CreateUserPayload): Promise<void> {
     const { email, password } = payload;
