@@ -1,34 +1,29 @@
+import { ResourceAlreadyExistsError } from '../../../common/errors/resourceAlreadyExistsError.js';
+import { LoggerClient } from '../../../common/loggerClient.js';
+import { UserRepository } from '../../../domain/repositories/userRepository.js';
+import { HashService } from '../../services/hashService/hashService.js';
+
 export interface RegisterUserActionPayload {
   readonly email: string;
   readonly password: string;
-  readonly name: string;
-}
-
-export interface RegisterUserActionResult {
-  readonly user: User;
 }
 
 export class RegisterUserCommandHandler {
   public constructor(
     private readonly userRepository: UserRepository,
     private readonly hashService: HashService,
-    private readonly loggerService: LoggerService,
+    private readonly logger: LoggerClient,
   ) {}
 
-  public async execute(payload: RegisterUserCommandHandlerPayload): Promise<RegisterUserCommandHandlerResult> {
-    const { email: emailInput, password, name } = payload;
+  public async execute(payload: RegisterUserActionPayload): Promise<void> {
+    const { email, password } = payload;
 
-    const email = emailInput.toLowerCase();
-
-    this.loggerService.debug({
+    this.logger.debug({
       message: 'Registering User...',
-      context: {
-        email,
-        name,
-      },
+      context: { email },
     });
 
-    const existingUser = await this.userRepository.findUser({ email });
+    const existingUser = await this.userRepository.findUserByEmail({ email });
 
     if (existingUser) {
       throw new ResourceAlreadyExistsError({
@@ -39,21 +34,14 @@ export class RegisterUserCommandHandler {
 
     const hashedPassword = await this.hashService.hash({ plainData: password });
 
-    const user = await this.userRepository.createUser({
+    await this.userRepository.createUser({
       email,
       password: hashedPassword,
-      name,
-      isEmailVerified: false,
     });
 
-    this.loggerService.info({
+    this.logger.info({
       message: 'User registered.',
-      context: {
-        email,
-        userId: user.getId(),
-      },
+      context: { email },
     });
-
-    return { user };
   }
 }

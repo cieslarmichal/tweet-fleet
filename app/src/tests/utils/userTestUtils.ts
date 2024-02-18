@@ -3,7 +3,7 @@ import {
   DynamoDBClient,
   GetItemCommand,
   PutItemCommand,
-  ScanCommand,
+  QueryCommand,
 } from '@aws-sdk/client-dynamodb';
 import { User } from '../../domain/entities/user.js';
 import { UserTestFactory } from '../factories/userTestFactory.js';
@@ -14,6 +14,10 @@ interface CreateAndPersistPayload {
 
 interface FindByIdPayload {
   id: string;
+}
+
+interface FindByEmailPayload {
+  email: string;
 }
 
 export class UserTestUtils {
@@ -63,21 +67,19 @@ export class UserTestUtils {
     return response.Item as unknown as User;
   }
 
-  public async findByEmail(payload: { email: string }): Promise<User | undefined> {
+  public async findUserByEmail(payload: FindByEmailPayload): Promise<User | undefined> {
     const { email } = payload;
 
-    const params = {
+    const command = new QueryCommand({
       TableName: this.tableName,
-      FilterExpression: '#email = :input',
+      KeyConditionExpression: '#email = :input',
       ExpressionAttributeNames: {
         '#email': 'email',
       },
       ExpressionAttributeValues: {
-        ':input': { N: email },
+        ':input': { S: email },
       },
-    };
-
-    const command = new ScanCommand(params);
+    });
 
     const response = await this.dynamoDbClient.send(command);
 

@@ -1,3 +1,10 @@
+import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
+import { LoggerClient } from '../../../common/loggerClient.js';
+import { Config } from '../../../config/config.js';
+import { UserRepository } from '../../../domain/repositories/userRepository.js';
+import { HashService } from '../../services/hashService/hashService.js';
+import { TokenService } from '../../services/tokenService/tokenService.js';
+
 export interface LoginUserCommandHandlerPayload {
   readonly email: string;
   readonly password: string;
@@ -5,16 +12,16 @@ export interface LoginUserCommandHandlerPayload {
 
 export interface LoginUserCommandHandlerResult {
   readonly accessToken: string;
-  readonly refreshToken: string;
-  readonly accessTokenExpiresIn: number;
+  readonly expiresIn: number;
 }
 
 export class LoginUserCommandHandler {
   public constructor(
     private readonly userRepository: UserRepository,
-    private readonly loggerService: LoggerService,
+    private readonly loggerService: LoggerClient,
     private readonly hashService: HashService,
     private readonly tokenService: TokenService,
+    private readonly config: Config,
   ) {}
 
   public async execute(payload: LoginUserCommandHandlerPayload): Promise<LoginUserCommandHandlerResult> {
@@ -27,7 +34,7 @@ export class LoginUserCommandHandler {
       context: { email },
     });
 
-    const user = await this.userRepository.findUser({ email });
+    const user = await this.userRepository.findUserByEmail({ email });
 
     if (!user) {
       throw new UnauthorizedAccessError({
@@ -38,7 +45,7 @@ export class LoginUserCommandHandler {
 
     const passwordIsValid = await this.hashService.compare({
       plainData: password,
-      hashedData: user.getPassword(),
+      hashedData: user.password,
     });
 
     if (!passwordIsValid) {
@@ -48,53 +55,25 @@ export class LoginUserCommandHandler {
       });
     }
 
-    if (!user.getIsEmailVerified()) {
-      throw new OperationNotValidError({
-        reason: 'User email is not verified.',
-        email,
-      });
-    }
-
-    const accessTokenExpiresIn = this.configProvider.getAccessTokenExpiresIn();
+    const expiresIn = this.config.jwtExpiration;
 
     const accessToken = this.tokenService.createToken({
-      data: { userId: user.getId() },
-      expiresIn: accessTokenExpiresIn,
-    });
-
-    const refreshTokenExpiresIn = this.configProvider.getRefreshTokenExpiresIn();
-
-    const refreshToken = this.tokenService.createToken({
-      data: { userId: user.getId() },
-      expiresIn: refreshTokenExpiresIn,
-    });
-
-    const expiresAt = new Date(Date.now() + refreshTokenExpiresIn * 1000);
-
-    user.addCreateRefreshTokenAction({
-      token: refreshToken,
-      expiresAt,
-    });
-
-    await this.userRepository.updateUser({
-      id: user.getId(),
-      domainActions: user.getDomainActions(),
+      data: { userId: user.id },
+      expiresIn,
     });
 
     this.loggerService.info({
       message: 'User logged in.',
       context: {
         email,
-        userId: user.getId(),
-        accessTokenExpiresIn,
-        refreshTokenExpiresIn,
+        userId: user.id,
+        expiresIn,
       },
     });
 
     return {
       accessToken,
-      refreshToken,
-      accessTokenExpiresIn,
+      expiresIn,
     };
   }
 }

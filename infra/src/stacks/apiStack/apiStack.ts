@@ -17,6 +17,7 @@ export class ApiStack extends core.Stack {
 
     const usersTable = new dynamodb.Table(this, 'UsersTable', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'email', type: dynamodb.AttributeType.STRING },
       tableName: 'users',
       removalPolicy: core.RemovalPolicy.DESTROY,
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
