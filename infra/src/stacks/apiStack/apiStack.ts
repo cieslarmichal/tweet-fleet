@@ -1,4 +1,5 @@
-import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as core from 'aws-cdk-lib';
 import { AppConfig } from '../../config/appConfig.js';
 import { EnvKey } from '../../config/envKey.js';
@@ -14,6 +15,20 @@ export class ApiStack extends core.Stack {
 
     const { config } = props;
 
+    const usersTable = new dynamodb.Table(this, 'UsersTable', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+      tableName: 'users',
+      removalPolicy: core.RemovalPolicy.DESTROY,
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+    });
+
+    const subscriptionsTable = new dynamodb.Table(this, 'SubscriptionsTable', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+      tableName: 'subscriptions',
+      removalPolicy: core.RemovalPolicy.DESTROY,
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+    });
+
     const lambdaEnvironment = {
       [EnvKey.jwtSecret]: config.jwtSecret,
       [EnvKey.jwtExpiresIn]: config.jwtExpiresIn,
@@ -26,23 +41,33 @@ export class ApiStack extends core.Stack {
       timeout: core.Duration.minutes(3),
     });
 
+    usersTable.grantReadWriteData(registerUserLambda);
+
     const loginUserLambda = new NodejsLambdaFunction(this, 'loginUserLambda', {
       entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/loginUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });
 
+    usersTable.grantReadWriteData(loginUserLambda);
+
     const createSubscriptionLambda = new NodejsLambdaFunction(this, 'createSubscriptionLambda', {
-      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/createSubsriptionLambdaHandler.ts`,
+      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/createSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });
 
+    usersTable.grantReadData(createSubscriptionLambda);
+    subscriptionsTable.grantReadWriteData(createSubscriptionLambda);
+
     const deleteSubscriptionLambda = new NodejsLambdaFunction(this, 'deleteSubscriptionLambda', {
-      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/deleteSubsriptionLambdaHandler.ts`,
+      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/deleteSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });
+
+    usersTable.grantReadData(deleteSubscriptionLambda);
+    subscriptionsTable.grantReadWriteData(deleteSubscriptionLambda);
 
     const getSubscriptionsLambda = new NodejsLambdaFunction(this, 'getSubscriptionsLambda', {
       entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/getSubscriptionsLambdaHandler.ts`,
@@ -50,10 +75,13 @@ export class ApiStack extends core.Stack {
       timeout: core.Duration.minutes(3),
     });
 
-    const restApi = new RestApi(this, 'RestApi', {
+    usersTable.grantReadData(getSubscriptionsLambda);
+    subscriptionsTable.grantReadWriteData(getSubscriptionsLambda);
+
+    const restApi = new apigateway.RestApi(this, 'Api', {
       defaultCorsPreflightOptions: {
-        allowOrigins: Cors.ALL_ORIGINS,
-        allowMethods: Cors.ALL_METHODS,
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
       },
     });
 
@@ -61,20 +89,20 @@ export class ApiStack extends core.Stack {
 
     const registerUserResource = usersResource.addResource('register');
 
-    registerUserResource.addMethod('POST', new LambdaIntegration(registerUserLambda));
+    registerUserResource.addMethod('POST', new apigateway.LambdaIntegration(registerUserLambda));
 
     const loginUserResource = usersResource.addResource('login');
 
-    loginUserResource.addMethod('POST', new LambdaIntegration(loginUserLambda));
+    loginUserResource.addMethod('POST', new apigateway.LambdaIntegration(loginUserLambda));
 
     const subscriptionsResource = restApi.root.addResource('subscriptions');
 
-    subscriptionsResource.addMethod('POST', new LambdaIntegration(createSubscriptionLambda));
+    subscriptionsResource.addMethod('POST', new apigateway.LambdaIntegration(createSubscriptionLambda));
 
-    subscriptionsResource.addMethod('GET', new LambdaIntegration(getSubscriptionsLambda));
+    subscriptionsResource.addMethod('GET', new apigateway.LambdaIntegration(getSubscriptionsLambda));
 
     const messageResource = subscriptionsResource.addResource('{id}');
 
-    messageResource.addMethod('DELETE', new LambdaIntegration(deleteSubscriptionLambda));
+    messageResource.addMethod('DELETE', new apigateway.LambdaIntegration(deleteSubscriptionLambda));
   }
 }
