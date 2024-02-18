@@ -67,7 +67,7 @@ export class UserTestUtils {
     return response.Item as unknown as User;
   }
 
-  public async findUserByEmail(payload: FindByEmailPayload): Promise<User | undefined> {
+  public async findByEmail(payload: FindByEmailPayload): Promise<User | undefined> {
     const { email } = payload;
 
     const command = new QueryCommand({

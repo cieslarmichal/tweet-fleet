@@ -8,7 +8,7 @@ export interface RegisterUserActionPayload {
   readonly password: string;
 }
 
-export class RegisterUserCommandHandler {
+export class RegisterUserAction {
   public constructor(
     private readonly userRepository: UserRepository,
     private readonly hashService: HashService,

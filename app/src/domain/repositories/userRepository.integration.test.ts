@@ -43,7 +43,7 @@ describe('UserRepository', () => {
     it('finds a User by id', async () => {
       const user = await userTestUtils.createAndPersist();
 
-      const foundUser = await userRepository.findUser({ id: user.id });
+      const foundUser = await userRepository.findUserById({ id: user.id });
 
       expect(foundUser).toBeDefined();
     });
@@ -51,7 +51,7 @@ describe('UserRepository', () => {
     it('returns undefined if a User with given id does not exist', async () => {
       const { id } = UserTestFactory.create();
 
-      const foundUser = await userRepository.findUser({ id });
+      const foundUser = await userRepository.findUserById({ id });
 
       expect(foundUser).toBeUndefined();
     });

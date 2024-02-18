@@ -5,17 +5,17 @@ import { UserRepository } from '../../../domain/repositories/userRepository.js';
 import { HashService } from '../../services/hashService/hashService.js';
 import { TokenService } from '../../services/tokenService/tokenService.js';
 
-export interface LoginUserCommandHandlerPayload {
+export interface LoginUserActionPayload {
   readonly email: string;
   readonly password: string;
 }
 
-export interface LoginUserCommandHandlerResult {
+export interface LoginUserActionResult {
   readonly accessToken: string;
   readonly expiresIn: number;
 }
 
-export class LoginUserCommandHandler {
+export class LoginUserAction {
   public constructor(
     private readonly userRepository: UserRepository,
     private readonly loggerService: LoggerClient,
@@ -24,7 +24,7 @@ export class LoginUserCommandHandler {
     private readonly config: Config,
   ) {}
 
-  public async execute(payload: LoginUserCommandHandlerPayload): Promise<LoginUserCommandHandlerResult> {
+  public async execute(payload: LoginUserActionPayload): Promise<LoginUserActionResult> {
     const { email: emailInput, password } = payload;
 
     const email = emailInput.toLowerCase();

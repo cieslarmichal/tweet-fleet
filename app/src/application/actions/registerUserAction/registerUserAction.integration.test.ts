@@ -1,114 +1,72 @@
-import { beforeEach, afterEach, expect, it, describe, vi } from 'vitest';
+import { beforeEach, afterEach, expect, it, describe } from 'vitest';
+import { RegisterUserAction } from './registerUserAction.js';
+import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
+import { UserRepository } from '../../../domain/repositories/userRepository.js';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { config } from '../../../config/config.js';
+import { HashService } from '../../services/hashService/hashService.js';
+import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
 
-import { SpyFactory } from '@common/tests';
-
-import { type RegisterUserCommandHandler } from './registerUserAction.js';
-import { OperationNotValidError } from '../../../../../common/errors/common/operationNotValidError.js';
-import { ResourceAlreadyExistsError } from '../../../../../common/errors/common/resourceAlreadyExistsError.js';
-import { Application } from '../../../../../core/application.js';
-import { type SqliteDatabaseClient } from '../../../../../core/database/sqliteDatabaseClient/sqliteDatabaseClient.js';
-import { coreSymbols } from '../../../../../core/symbols.js';
-import { type TokenService } from '../../../../authModule/application/services/tokenService/tokenService.js';
-import { authSymbols } from '../../../../authModule/symbols.js';
-import { symbols } from '../../../symbols.js';
-import { UserTestFactory } from '../../../tests/factories/userTestFactory/userTestFactory.js';
-import { UserTestUtils } from '../../../tests/utils/userTestUtils/userTestUtils.js';
-import { type EmailService } from '../../services/emailService/emailService.js';
-
-describe('RegisterUserCommandHandler', () => {
-  const spyFactory = new SpyFactory(vi);
-
-  let registerUserCommandHandler: RegisterUserCommandHandler;
-
-  let sqliteDatabaseClient: SqliteDatabaseClient;
-
-  let emailService: EmailService;
-
-  let tokenService: TokenService;
-
+describe('RegisterUserAction', () => {
+  let registerUserAction: RegisterUserAction;
   let userTestUtils: UserTestUtils;
-
-  const userTestFactory = new UserTestFactory();
+  let hashService: HashService;
 
   beforeEach(async () => {
-    const container = Application.createContainer();
+    const dynamodbClient = new DynamoDBClient({ endpoint: 'http://127.0.0.1:4566' });
 
-    registerUserCommandHandler = container.get<RegisterUserCommandHandler>(symbols.registerUserCommandHandler);
+    const userRepository = new UserRepository(dynamodbClient);
 
-    tokenService = container.get<TokenService>(authSymbols.tokenService);
+    hashService = new HashService({ hashSaltRounds: config.hashSaltRounds });
 
-    sqliteDatabaseClient = container.get<SqliteDatabaseClient>(coreSymbols.sqliteDatabaseClient);
+    const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
 
-    emailService = container.get<EmailService>(symbols.emailService);
+    registerUserAction = new RegisterUserAction(userRepository, hashService, logger);
 
-    userTestUtils = new UserTestUtils(sqliteDatabaseClient);
+    userTestUtils = new UserTestUtils(dynamodbClient);
 
     await userTestUtils.truncate();
   });
 
   afterEach(async () => {
     await userTestUtils.truncate();
-
-    await sqliteDatabaseClient.destroy();
   });
 
   it('creates a User', async () => {
-    const user = userTestFactory.create();
+    const { email, password } = UserTestFactory.create();
 
-    spyFactory.create(emailService, 'sendEmail').mockImplementation(async () => {});
-
-    const { user: createdUser } = await registerUserCommandHandler.execute({
-      email: user.getEmail(),
-      password: user.getPassword(),
-      name: user.getName(),
+    await registerUserAction.execute({
+      email,
+      password,
     });
 
-    const foundUser = await userTestUtils.findByEmail({ email: user.getEmail() });
+    const foundUser = await userTestUtils.findByEmail({ email });
 
-    expect(createdUser.getEmail()).toEqual(user.getEmail());
+    expect(foundUser).toBeDefined();
 
-    expect(createdUser.getIsEmailVerified()).toEqual(false);
+    const passwordMatches = await hashService.compare({
+      plainData: password,
+      hashedData: foundUser?.password as string,
+    });
 
-    expect(foundUser?.email).toEqual(user.getEmail());
-
-    const userTokens = await userTestUtils.findTokensByUserId({ userId: createdUser.getId() });
-
-    expect(userTokens.emailVerificationToken).toBeDefined();
-
-    const emailVerificationTokenPayload = tokenService.verifyToken({ token: userTokens.emailVerificationToken! });
-
-    expect(emailVerificationTokenPayload['userId']).toBe(createdUser.getId());
+    expect(passwordMatches).toBe(true);
   });
 
   it('throws an error when a User with the same email already exists', async () => {
-    const existingUser = await userTestUtils.createAndPersist();
+    const { email, password } = await userTestUtils.createAndPersist();
 
-    expect(async () => {
-      await registerUserCommandHandler.execute({
-        email: existingUser.email,
-        password: existingUser.password,
-        name: existingUser.name,
+    try {
+      await registerUserAction.execute({
+        email,
+        password,
       });
-    }).toThrowErrorInstance({
-      instance: ResourceAlreadyExistsError,
-      context: {
-        name: 'User',
-        email: existingUser.email,
-      },
-    });
-  });
+    } catch (error) {
+      expect(error).toBeDefined();
 
-  it('throws an error when password does not meet requirements', async () => {
-    const user = userTestFactory.create();
+      return;
+    }
 
-    expect(async () => {
-      await registerUserCommandHandler.execute({
-        email: user.getEmail(),
-        password: '123',
-        name: user.getName(),
-      });
-    }).toThrowErrorInstance({
-      instance: OperationNotValidError,
-    });
+    expect.fail();
   });
 });

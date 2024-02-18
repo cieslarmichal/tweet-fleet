@@ -1,159 +1,102 @@
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
-import { type LoginUserCommandHandler } from './loginUserCommandHandler/loginUserCommandHandler.js';
-import { testSymbols } from '../../../../../../tests/container/symbols.js';
-import { TestContainer } from '../../../../../../tests/container/testContainer.js';
-import { OperationNotValidError } from '../../../../../common/errors/common/operationNotValidError.js';
-import { type SqliteDatabaseClient } from '../../../../../core/database/sqliteDatabaseClient/sqliteDatabaseClient.js';
-import { coreSymbols } from '../../../../../core/symbols.js';
-import { UnauthorizedAccessError } from '../../../../authModule/application/errors/unathorizedAccessError.js';
-import { type TokenService } from '../../../../authModule/application/services/tokenService/tokenService.js';
-import { authSymbols } from '../../../../authModule/symbols.js';
-import { symbols } from '../../../symbols.js';
-import { UserTestFactory } from '../../../tests/factories/userTestFactory/userTestFactory.js';
-import { type UserTestUtils } from '../../../tests/utils/userTestUtils/userTestUtils.js';
-import { type UserModuleConfigProvider } from '../../../userModuleConfigProvider.js';
-import { type HashService } from '../../services/hashService/hashService.js';
+import { HashService } from '../../services/hashService/hashService.js';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
+import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { config } from '../../../config/config.js';
+import { UserRepository } from '../../../domain/repositories/userRepository.js';
+import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
+import { LoginUserAction } from './loginUserAction.js';
+import { TokenService } from '../../services/tokenService/tokenService.js';
+import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
 
-describe('LoginUserCommandHandler', () => {
-  let loginUserCommandHandler: LoginUserCommandHandler;
-
-  let sqliteDatabaseClient: SqliteDatabaseClient;
-
+describe('LoginUserAction', () => {
+  let loginUserAction: LoginUserAction;
   let userTestUtils: UserTestUtils;
-
+  let hashService: HashService;
   let tokenService: TokenService;
 
-  let hashService: HashService;
-
-  let configProvider: UserModuleConfigProvider;
-
-  const userTestFactory = new UserTestFactory();
-
   beforeEach(async () => {
-    const container = TestContainer.create();
+    const dynamodbClient = new DynamoDBClient({ endpoint: 'http://127.0.0.1:4566' });
 
-    loginUserCommandHandler = container.get<LoginUserCommandHandler>(symbols.loginUserCommandHandler);
+    const userRepository = new UserRepository(dynamodbClient);
 
-    tokenService = container.get<TokenService>(authSymbols.tokenService);
+    hashService = new HashService({ hashSaltRounds: config.hashSaltRounds });
 
-    configProvider = container.get<UserModuleConfigProvider>(symbols.userModuleConfigProvider);
+    const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
 
-    hashService = container.get<HashService>(symbols.hashService);
+    tokenService = new TokenService({ jwtSecret: config.jwtSecret });
 
-    sqliteDatabaseClient = container.get<SqliteDatabaseClient>(coreSymbols.sqliteDatabaseClient);
+    loginUserAction = new LoginUserAction(userRepository, logger, hashService, tokenService, config);
 
-    userTestUtils = container.get<UserTestUtils>(testSymbols.userTestUtils);
+    userTestUtils = new UserTestUtils(dynamodbClient);
 
     await userTestUtils.truncate();
   });
 
   afterEach(async () => {
     await userTestUtils.truncate();
-
-    await sqliteDatabaseClient.destroy();
   });
 
   it('returns tokens', async () => {
-    const createdUser = userTestFactory.create({ isEmailVerified: true });
+    const user = UserTestFactory.create();
 
-    const hashedPassword = await hashService.hash({ plainData: createdUser.getPassword() });
+    const hashedPassword = await hashService.hash({ plainData: user.password });
 
-    await userTestUtils.persist({
-      user: {
-        id: createdUser.getId(),
-        email: createdUser.getEmail(),
+    await userTestUtils.createAndPersist({
+      input: {
+        id: user.id,
+        email: user.email,
         password: hashedPassword,
-        name: createdUser.getName(),
-        isEmailVerified: createdUser.getIsEmailVerified(),
       },
     });
 
-    const { accessToken, refreshToken, accessTokenExpiresIn } = await loginUserCommandHandler.execute({
-      email: createdUser.getEmail(),
-      password: createdUser.getPassword(),
+    const { accessToken, expiresIn } = await loginUserAction.execute({
+      email: user.email,
+      password: user.password,
     });
 
     const accessTokenPayload = tokenService.verifyToken({ token: accessToken });
 
-    const refreshTokenPayload = tokenService.verifyToken({ token: refreshToken });
+    expect(accessTokenPayload['userId']).toBe(user.id);
 
-    expect(accessTokenPayload['userId']).toBe(createdUser.getId());
-
-    expect(refreshTokenPayload['userId']).toBe(createdUser.getId());
-
-    const userTokens = await userTestUtils.findTokensByUserId({
-      userId: createdUser.getId(),
-    });
-
-    expect(userTokens.refreshTokens.includes(refreshToken)).toBe(true);
-
-    expect(accessTokenExpiresIn).toBe(configProvider.getAccessTokenExpiresIn());
-  });
-
-  it('throws an error if User email is not verified', async () => {
-    const createdUser = userTestFactory.create();
-
-    const hashedPassword = await hashService.hash({ plainData: createdUser.getPassword() });
-
-    await userTestUtils.persist({
-      user: {
-        id: createdUser.getId(),
-        email: createdUser.getEmail(),
-        password: hashedPassword,
-        name: createdUser.getName(),
-        isEmailVerified: false,
-      },
-    });
-
-    await expect(
-      async () =>
-        await loginUserCommandHandler.execute({
-          email: createdUser.getEmail(),
-          password: createdUser.getPassword(),
-        }),
-    ).toThrowErrorInstance({
-      instance: OperationNotValidError,
-      context: {
-        reason: 'User email is not verified.',
-        email: createdUser.getEmail(),
-      },
-    });
+    expect(expiresIn).toBe(config.jwtExpiration);
   });
 
   it('throws an error if a User with given email does not exist', async () => {
-    const nonExistentUser = userTestFactory.create();
+    const { email, password } = UserTestFactory.create();
 
-    await expect(
-      async () =>
-        await loginUserCommandHandler.execute({
-          email: nonExistentUser.getEmail(),
-          password: nonExistentUser.getPassword(),
-        }),
-    ).toThrowErrorInstance({
-      instance: UnauthorizedAccessError,
-      context: {
-        reason: 'User not found.',
-        email: nonExistentUser.getEmail(),
-      },
-    });
+    try {
+      await loginUserAction.execute({
+        email,
+        password,
+      });
+    } catch (error) {
+      expect(error instanceof UnauthorizedAccessError).toBe(true);
+
+      return;
+    }
+
+    expect.fail();
   });
 
   it(`throws an error if User's password does not match stored password`, async () => {
-    const { email, password } = await userTestUtils.createAndPersist({ input: { isEmailVerified: true } });
+    const { email } = await userTestUtils.createAndPersist();
 
-    await expect(
-      async () =>
-        await loginUserCommandHandler.execute({
-          email,
-          password,
-        }),
-    ).toThrowErrorInstance({
-      instance: UnauthorizedAccessError,
-      context: {
-        reason: 'User not found.',
+    const { password: invalidPassword } = UserTestFactory.create();
+
+    try {
+      await loginUserAction.execute({
         email,
-      },
-    });
+        password: invalidPassword,
+      });
+    } catch (error) {
+      expect(error instanceof UnauthorizedAccessError).toBe(true);
+
+      return;
+    }
+
+    expect.fail();
   });
 });
