@@ -1,12 +1,12 @@
-import { beforeEach, afterEach, expect, it, describe } from 'vitest';
+import { beforeEach, expect, it, describe } from 'vitest';
 import { RegisterUserAction } from './registerUserAction.js';
 import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
 import { UserRepository } from '../../../domain/repositories/userRepository.js';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
 import { config } from '../../../config/config.js';
 import { HashService } from '../../services/hashService/hashService.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
+import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 
 describe('RegisterUserAction', () => {
   let registerUserAction: RegisterUserAction;
@@ -14,7 +14,7 @@ describe('RegisterUserAction', () => {
   let hashService: HashService;
 
   beforeEach(async () => {
-    const dynamodbClient = new DynamoDBClient({ endpoint: 'http://127.0.0.1:4566' });
+    const dynamodbClient = DynamoDbClientFactory.create({ endpoint: 'http://127.0.0.1:4566' });
 
     const userRepository = new UserRepository(dynamodbClient);
 
@@ -25,12 +25,6 @@ describe('RegisterUserAction', () => {
     registerUserAction = new RegisterUserAction(userRepository, hashService, logger);
 
     userTestUtils = new UserTestUtils(dynamodbClient);
-
-    await userTestUtils.truncate();
-  });
-
-  afterEach(async () => {
-    await userTestUtils.truncate();
   });
 
   it('creates a User', async () => {

@@ -1,7 +1,6 @@
-import { beforeEach, afterEach, expect, it, describe } from 'vitest';
+import { beforeEach, expect, it, describe } from 'vitest';
 
 import { HashService } from '../../services/hashService/hashService.js';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
 import { config } from '../../../config/config.js';
@@ -10,6 +9,7 @@ import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
 import { LoginUserAction } from './loginUserAction.js';
 import { TokenService } from '../../services/tokenService/tokenService.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
+import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 
 describe('LoginUserAction', () => {
   let loginUserAction: LoginUserAction;
@@ -18,7 +18,7 @@ describe('LoginUserAction', () => {
   let tokenService: TokenService;
 
   beforeEach(async () => {
-    const dynamodbClient = new DynamoDBClient({ endpoint: 'http://127.0.0.1:4566' });
+    const dynamodbClient = DynamoDbClientFactory.create({ endpoint: 'http://127.0.0.1:4566' });
 
     const userRepository = new UserRepository(dynamodbClient);
 
@@ -31,12 +31,6 @@ describe('LoginUserAction', () => {
     loginUserAction = new LoginUserAction(userRepository, logger, hashService, tokenService, config);
 
     userTestUtils = new UserTestUtils(dynamodbClient);
-
-    await userTestUtils.truncate();
-  });
-
-  afterEach(async () => {
-    await userTestUtils.truncate();
   });
 
   it('returns tokens', async () => {

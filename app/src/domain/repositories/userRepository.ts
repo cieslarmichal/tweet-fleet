@@ -1,6 +1,7 @@
-import { DynamoDBClient, GetItemCommand, PutItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { User } from '../entities/user.js';
 import { v4 as uuidv4 } from 'uuid';
+import { DynamoDbClient } from '../../common/dynamoDbClient.js';
+import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 export interface CreateUserPayload {
   readonly email: string;
@@ -18,17 +19,17 @@ export interface FindUserByEmailPayload {
 export class UserRepository {
   private readonly tableName = 'users';
 
-  public constructor(private readonly dynamoDbClient: DynamoDBClient) {}
+  public constructor(private readonly dynamoDbClient: DynamoDbClient) {}
 
   public async createUser(payload: CreateUserPayload): Promise<void> {
     const { email, password } = payload;
 
-    const command = new PutItemCommand({
+    const command = new PutCommand({
       TableName: this.tableName,
       Item: {
-        id: { S: uuidv4() },
-        email: { S: email },
-        password: { S: password },
+        id: uuidv4(),
+        email,
+        password,
       },
     });
 
@@ -38,11 +39,9 @@ export class UserRepository {
   public async findUserById(payload: FindUserByIdPayload): Promise<User | undefined> {
     const { id } = payload;
 
-    const command = new GetItemCommand({
+    const command = new GetCommand({
       TableName: this.tableName,
-      Key: {
-        id: { N: id },
-      },
+      Key: { id },
     });
 
     const response = await this.dynamoDbClient.send(command);
@@ -57,20 +56,20 @@ export class UserRepository {
   public async findUserByEmail(payload: FindUserByEmailPayload): Promise<User | undefined> {
     const { email } = payload;
 
-    const command = new QueryCommand({
+    const command = new ScanCommand({
       TableName: this.tableName,
-      KeyConditionExpression: '#email = :input',
+      FilterExpression: '#email = :email',
       ExpressionAttributeNames: {
         '#email': 'email',
       },
       ExpressionAttributeValues: {
-        ':input': { S: email },
+        ':email': email,
       },
     });
 
     const response = await this.dynamoDbClient.send(command);
 
-    if (!response.Items || response.Items.length === 0) {
+    if (!response.Items || !response.Items.length) {
       return undefined;
     }
 

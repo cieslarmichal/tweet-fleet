@@ -1,12 +1,7 @@
-import {
-  DeleteItemCommand,
-  DynamoDBClient,
-  GetItemCommand,
-  PutItemCommand,
-  QueryCommand,
-} from '@aws-sdk/client-dynamodb';
+import { DynamoDbClient } from '../../common/dynamoDbClient.js';
 import { User } from '../../domain/entities/user.js';
 import { UserTestFactory } from '../factories/userTestFactory.js';
+import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 interface CreateAndPersistPayload {
   input?: Partial<User>;
@@ -23,23 +18,19 @@ interface FindByEmailPayload {
 export class UserTestUtils {
   private readonly tableName = 'users';
 
-  public constructor(private readonly dynamoDbClient: DynamoDBClient) {}
-
-  public async truncate(): Promise<void> {
-    await this.dynamoDbClient.send(new DeleteItemCommand({ TableName: this.tableName, Key: {} }));
-  }
+  public constructor(private readonly dynamoDbClient: DynamoDbClient) {}
 
   public async createAndPersist(payload: CreateAndPersistPayload = {}): Promise<User> {
     const { input } = payload;
 
     const user = UserTestFactory.create(input);
 
-    const command = new PutItemCommand({
+    const command = new PutCommand({
       TableName: this.tableName,
       Item: {
-        id: { S: user.id },
-        email: { S: user.email },
-        password: { S: user.password },
+        id: user.id,
+        email: user.email,
+        password: user.password,
       },
     });
 
@@ -51,11 +42,9 @@ export class UserTestUtils {
   public async findById(payload: FindByIdPayload): Promise<User | undefined> {
     const { id } = payload;
 
-    const command = new GetItemCommand({
+    const command = new GetCommand({
       TableName: this.tableName,
-      Key: {
-        id: { S: id },
-      },
+      Key: { id },
     });
 
     const response = await this.dynamoDbClient.send(command);
@@ -70,20 +59,20 @@ export class UserTestUtils {
   public async findByEmail(payload: FindByEmailPayload): Promise<User | undefined> {
     const { email } = payload;
 
-    const command = new QueryCommand({
+    const command = new ScanCommand({
       TableName: this.tableName,
-      KeyConditionExpression: '#email = :input',
+      FilterExpression: '#email = :email',
       ExpressionAttributeNames: {
         '#email': 'email',
       },
       ExpressionAttributeValues: {
-        ':input': { S: email },
+        ':email': email,
       },
     });
 
     const response = await this.dynamoDbClient.send(command);
 
-    if (!response.Items || response.Items.length === 0) {
+    if (!response.Items || !response.Items.length) {
       return undefined;
     }
 

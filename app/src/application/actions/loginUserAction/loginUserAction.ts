@@ -25,9 +25,7 @@ export class LoginUserAction {
   ) {}
 
   public async execute(payload: LoginUserActionPayload): Promise<LoginUserActionResult> {
-    const { email: emailInput, password } = payload;
-
-    const email = emailInput.toLowerCase();
+    const { email, password } = payload;
 
     this.loggerService.debug({
       message: 'Logging User in...',

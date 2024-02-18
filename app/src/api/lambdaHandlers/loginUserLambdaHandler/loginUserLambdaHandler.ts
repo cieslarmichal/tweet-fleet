@@ -30,6 +30,6 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ "accessToken" }),
+    body: JSON.stringify({}),
   };
 };
