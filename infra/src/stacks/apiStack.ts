@@ -37,7 +37,7 @@ export class ApiStack extends core.Stack {
     };
 
     const registerUserLambda = new NodejsLambda(this, 'registerUserLambda', {
-      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/registerUserLambdaHandler.ts`,
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/registerUserLambdaHandler/registerUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });
@@ -45,7 +45,7 @@ export class ApiStack extends core.Stack {
     usersTable.grantReadWriteData(registerUserLambda);
 
     const loginUserLambda = new NodejsLambda(this, 'loginUserLambda', {
-      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/loginUserLambdaHandler.ts`,
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/loginUserLambdaHandler/loginUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });
@@ -53,7 +53,7 @@ export class ApiStack extends core.Stack {
     usersTable.grantReadWriteData(loginUserLambda);
 
     const createSubscriptionLambda = new NodejsLambda(this, 'createSubscriptionLambda', {
-      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/createSubscriptionLambdaHandler.ts`,
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/createSubscriptionLambdaHandler/createSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });
@@ -62,7 +62,7 @@ export class ApiStack extends core.Stack {
     subscriptionsTable.grantReadWriteData(createSubscriptionLambda);
 
     const deleteSubscriptionLambda = new NodejsLambda(this, 'deleteSubscriptionLambda', {
-      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/deleteSubscriptionLambdaHandler.ts`,
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/deleteSubscriptionLambdaHandler/deleteSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });
@@ -71,7 +71,7 @@ export class ApiStack extends core.Stack {
     subscriptionsTable.grantReadWriteData(deleteSubscriptionLambda);
 
     const getSubscriptionsLambda = new NodejsLambda(this, 'getSubscriptionsLambda', {
-      entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/getSubscriptionsLambdaHandler.ts`,
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/getSubscriptionsLambdaHandler/getSubscriptionsLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
     });

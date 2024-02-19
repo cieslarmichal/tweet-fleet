@@ -10,7 +10,7 @@ export class EmailStack extends core.Stack {
     const lambdaEnvironment = {};
 
     const sendEmailsLambda = new NodejsLambda(this, 'sendEmailsLambda', {
-      entry: `${process.cwd()}/src/stacks/emailStack/lambdaHandlers/sendEmailsLambdaHandler.ts`,
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/sendEmailsLambdaHandler/sendEmailsLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(15),
     });
