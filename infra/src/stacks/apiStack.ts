@@ -1,12 +1,12 @@
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as core from 'aws-cdk-lib';
-import { AppConfig } from '../../config/appConfig.js';
-import { EnvKey } from '../../config/envKey.js';
-import { NodejsLambdaFunction } from '../../common/nodejsLambdaFunction.js';
+import { Config } from '../config.js';
+import { EnvKey } from '../envKey.js';
+import { NodejsLambda } from './common/nodejsLambda.js';
 
 export interface ApiStackProps extends core.StackProps {
-  readonly config: AppConfig;
+  readonly config: Config;
 }
 
 export class ApiStack extends core.Stack {
@@ -36,7 +36,7 @@ export class ApiStack extends core.Stack {
       [EnvKey.hashSaltRounds]: config.hashSaltRounds,
     };
 
-    const registerUserLambda = new NodejsLambdaFunction(this, 'registerUserLambda', {
+    const registerUserLambda = new NodejsLambda(this, 'registerUserLambda', {
       entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/registerUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
@@ -44,7 +44,7 @@ export class ApiStack extends core.Stack {
 
     usersTable.grantReadWriteData(registerUserLambda);
 
-    const loginUserLambda = new NodejsLambdaFunction(this, 'loginUserLambda', {
+    const loginUserLambda = new NodejsLambda(this, 'loginUserLambda', {
       entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/loginUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
@@ -52,7 +52,7 @@ export class ApiStack extends core.Stack {
 
     usersTable.grantReadWriteData(loginUserLambda);
 
-    const createSubscriptionLambda = new NodejsLambdaFunction(this, 'createSubscriptionLambda', {
+    const createSubscriptionLambda = new NodejsLambda(this, 'createSubscriptionLambda', {
       entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/createSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
@@ -61,7 +61,7 @@ export class ApiStack extends core.Stack {
     usersTable.grantReadData(createSubscriptionLambda);
     subscriptionsTable.grantReadWriteData(createSubscriptionLambda);
 
-    const deleteSubscriptionLambda = new NodejsLambdaFunction(this, 'deleteSubscriptionLambda', {
+    const deleteSubscriptionLambda = new NodejsLambda(this, 'deleteSubscriptionLambda', {
       entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/deleteSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),
@@ -70,7 +70,7 @@ export class ApiStack extends core.Stack {
     usersTable.grantReadData(deleteSubscriptionLambda);
     subscriptionsTable.grantReadWriteData(deleteSubscriptionLambda);
 
-    const getSubscriptionsLambda = new NodejsLambdaFunction(this, 'getSubscriptionsLambda', {
+    const getSubscriptionsLambda = new NodejsLambda(this, 'getSubscriptionsLambda', {
       entry: `${process.cwd()}/src/stacks/apiStack/lambdaHandlers/getSubscriptionsLambdaHandler.ts`,
       environment: lambdaEnvironment,
       timeout: core.Duration.minutes(3),

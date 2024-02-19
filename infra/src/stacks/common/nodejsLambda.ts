@@ -4,7 +4,7 @@ import { NodejsFunction, type NodejsFunctionProps, OutputFormat } from 'aws-cdk-
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { type Construct } from 'constructs';
 
-export class NodejsLambdaFunction extends NodejsFunction {
+export class NodejsLambda extends NodejsFunction {
   public constructor(scope: Construct, id: string, props: NodejsFunctionProps) {
     super(scope, id, {
       handler: 'lambda',

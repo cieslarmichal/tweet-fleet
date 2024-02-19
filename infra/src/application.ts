@@ -2,10 +2,10 @@
 import 'source-map-support/register.js';
 import * as core from 'aws-cdk-lib';
 
-import { AppConfig } from './config/appConfig.js';
-import { EmailStack } from './stacks/emailStack/emailStack.js';
-import { EnvKey } from './config/envKey.js';
-import { ApiStack } from './stacks/apiStack/apiStack.js';
+import { Config } from './config.js';
+import { EmailStack } from './stacks/emailStack.js';
+import { EnvKey } from './envKey.js';
+import { ApiStack } from './stacks/apiStack.js';
 
 const awsRegion = process.env[EnvKey.awsRegion] || process.env[EnvKey.awsDefaultRegion];
 const awsAccount = process.env[EnvKey.awsAccountId];
@@ -22,13 +22,7 @@ console.log({
   hashSaltRounds,
 });
 
-if (
-  !awsRegion ||
-  !awsAccount ||
-  !jwtSecret ||
-  !jwtExpiresIn ||
-  !hashSaltRounds ||
-) {
+if (!awsRegion || !awsAccount || !jwtSecret || !jwtExpiresIn || !hashSaltRounds) {
   throw new Error('Missing environment variables');
 }
 
@@ -39,13 +33,12 @@ const env = {
   region: awsRegion,
 };
 
-
-const appConfig: AppConfig = {
+const config: Config = {
   jwtSecret,
   jwtExpiresIn,
   hashSaltRounds,
 };
 
-new EmailStack(app, 'MessagesProcessing', { env, appConfig });
+new EmailStack(app, 'MessagesProcessing', { env });
 
-new ApiStack(app, 'RestApi', { env, appConfig });
+new ApiStack(app, 'RestApi', { env, config });
