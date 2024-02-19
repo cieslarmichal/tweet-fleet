@@ -2,7 +2,6 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as core from 'aws-cdk-lib';
 import { Config } from '../config.js';
-import { EnvKey } from '../envKey.js';
 import { NodejsLambda } from './common/nodejsLambda.js';
 
 export interface ApiStackProps extends core.StackProps {
@@ -31,9 +30,8 @@ export class ApiStack extends core.Stack {
     });
 
     const lambdaEnvironment = {
-      [EnvKey.jwtSecret]: config.jwtSecret,
-      [EnvKey.jwtExpiresIn]: config.jwtExpiresIn,
-      [EnvKey.hashSaltRounds]: config.hashSaltRounds,
+      ['JWT_SECRET']: config.jwtSecret,
+      ['HASH_SALT_ROUNDS']: config.hashSaltRounds,
     };
 
     const registerUserLambda = new NodejsLambda(this, 'registerUserLambda', {
