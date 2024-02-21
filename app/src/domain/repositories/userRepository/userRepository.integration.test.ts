@@ -1,8 +1,8 @@
 import { beforeEach, expect, it, describe } from 'vitest';
 import { UserRepository } from './userRepository.js';
-import { UserTestFactory } from '../../tests/factories/userTestFactory.js';
-import { UserTestUtils } from '../../tests/utils/userTestUtils.js';
-import { DynamoDbClientFactory } from '../../common/dynamoDbClient.js';
+import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
+import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
+import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 
 describe('UserRepository', () => {
   let userRepository: UserRepository;

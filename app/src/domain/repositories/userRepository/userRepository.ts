@@ -1,6 +1,6 @@
-import { User } from '../entities/user.js';
+import { User } from '../../entities/user/user.js';
 import { v4 as uuidv4 } from 'uuid';
-import { DynamoDbClient } from '../../common/dynamoDbClient.js';
+import { DynamoDbClient } from '../../../common/dynamoDbClient.js';
 import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 export interface CreateUserPayload {

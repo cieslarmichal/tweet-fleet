@@ -1,5 +1,5 @@
 import { DynamoDbClient } from '../../common/dynamoDbClient.js';
-import { User } from '../../domain/entities/user.js';
+import { User } from '../../domain/entities/user/user.js';
 import { UserTestFactory } from '../factories/userTestFactory.js';
 import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 

@@ -1,7 +1,7 @@
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerClient } from '../../../common/loggerClient.js';
 import { Config } from '../../../config/config.js';
-import { UserRepository } from '../../../domain/repositories/userRepository.js';
+import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { HashService } from '../../services/hashService/hashService.js';
 import { TokenService } from '../../services/tokenService/tokenService.js';
 

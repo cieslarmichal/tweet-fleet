@@ -4,7 +4,7 @@ import { HashService } from '../../services/hashService/hashService.js';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
 import { config } from '../../../config/config.js';
-import { UserRepository } from '../../../domain/repositories/userRepository.js';
+import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
 import { LoginUserAction } from './loginUserAction.js';
 import { TokenService } from '../../services/tokenService/tokenService.js';

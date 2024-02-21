@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, describe } from 'vitest';
 import { RegisterUserAction } from './registerUserAction.js';
 import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
-import { UserRepository } from '../../../domain/repositories/userRepository.js';
+import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
 import { config } from '../../../config/config.js';
 import { HashService } from '../../services/hashService/hashService.js';
