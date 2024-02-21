@@ -40,7 +40,7 @@ describe('SubscriptionRepository', () => {
     it('find Subscriptions', async () => {
       const userId = faker.string.uuid();
 
-      const subscription = await subscriptionTestUtils.createAndPersist();
+      const subscription = await subscriptionTestUtils.createAndPersist({ input: { userId } });
 
       const foundSubscriptions = await subscriptionRepository.findSubscriptions({ userId });
 
