@@ -1,4 +1,4 @@
-import { APIGatewayEvent, APIGatewayProxyEventPathParameters, Handler, ProxyResult } from 'aws-lambda';
+import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda';
 
 // const databaseName = process.env[EnvKey.databaseName] as string;
 // const host = process.env[EnvKey.databaseHost] as string;
@@ -23,11 +23,7 @@ import { APIGatewayEvent, APIGatewayProxyEventPathParameters, Handler, ProxyResu
 export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResult> => {
   const authorizationHeader = event.headers['Authorization'];
 
-  const [_, accessToken] = authorizationHeader?.split(' ') as string[];
-
-  const { messageId } = event.pathParameters as APIGatewayProxyEventPathParameters;
-
-  console.log({ messageId, accessToken });
+  console.log({ authorizationHeader });
 
   // await deleteMessageCommandImpl.deleteMessage({
   //   id: messageId as string,

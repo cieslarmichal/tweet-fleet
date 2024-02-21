@@ -1,16 +1,19 @@
 import { beforeEach, expect, it, describe } from 'vitest';
+
 import { RegisterUserAction } from './registerUserAction.js';
-import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
-import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
+import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
 import { config } from '../../../config/config.js';
-import { HashService } from '../../services/hashService/hashService.js';
+import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
-import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
+import { HashService } from '../../services/hashService/hashService.js';
 
 describe('RegisterUserAction', () => {
   let registerUserAction: RegisterUserAction;
+
   let userTestUtils: UserTestUtils;
+
   let hashService: HashService;
 
   beforeEach(async () => {

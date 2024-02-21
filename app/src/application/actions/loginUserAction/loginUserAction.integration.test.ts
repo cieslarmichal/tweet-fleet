@@ -1,20 +1,23 @@
 import { beforeEach, expect, it, describe } from 'vitest';
 
-import { HashService } from '../../services/hashService/hashService.js';
+import { LoginUserAction } from './loginUserAction.js';
+import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
 import { config } from '../../../config/config.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
-import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
-import { LoginUserAction } from './loginUserAction.js';
-import { TokenService } from '../../services/tokenService/tokenService.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
-import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
+import { HashService } from '../../services/hashService/hashService.js';
+import { TokenService } from '../../services/tokenService/tokenService.js';
 
 describe('LoginUserAction', () => {
   let loginUserAction: LoginUserAction;
+
   let userTestUtils: UserTestUtils;
+
   let hashService: HashService;
+
   let tokenService: TokenService;
 
   beforeEach(async () => {

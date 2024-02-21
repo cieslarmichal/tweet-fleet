@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { User } from '../../domain/entities/user/user.js';
+
+import { type User } from '../../domain/entities/user/user.js';
 
 export class UserTestFactory {
   public static create(input: Partial<User> = {}): User {

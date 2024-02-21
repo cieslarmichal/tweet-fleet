@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import fetch from 'node-fetch';
 
 export interface EmailServiceConfig {

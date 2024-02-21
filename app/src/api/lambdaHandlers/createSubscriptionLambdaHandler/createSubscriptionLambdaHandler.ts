@@ -1,11 +1,9 @@
-import { APIGatewayEvent, Handler, ProxyResult } from 'aws-lambda';
+import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda';
 
 export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResult> => {
   const authorizationHeader = event.headers['Authorization'];
 
-  const [_, accessToken] = authorizationHeader?.split(' ') as string[];
-
-  console.log({ accessToken });
+  console.log({ authorizationHeader });
 
   // const { message } = await createMessageCommand.createMessage({
   //   title: title as string,

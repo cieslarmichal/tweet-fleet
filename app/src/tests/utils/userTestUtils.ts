@@ -1,7 +1,10 @@
-import { DynamoDbClient } from '../../common/dynamoDbClient.js';
-import { User } from '../../domain/entities/user/user.js';
-import { UserTestFactory } from '../factories/userTestFactory.js';
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+
+import { type DynamoDbClient } from '../../common/dynamoDbClient.js';
+import { type User } from '../../domain/entities/user/user.js';
+import { UserTestFactory } from '../factories/userTestFactory.js';
 
 interface CreateAndPersistPayload {
   input?: Partial<User>;

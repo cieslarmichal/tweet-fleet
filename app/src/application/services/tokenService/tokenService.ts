@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 
 export interface TokenServiceConfig {
   readonly jwtSecret: string;
@@ -19,7 +19,7 @@ export class TokenService {
   public createToken(payload: CreateTokenPayload): string {
     const { data, expiresIn } = payload;
 
-    const token = jwt.sign(data, this.config.jwtSecret, {
+    const token = sign(data, this.config.jwtSecret, {
       expiresIn,
       algorithm: 'HS512',
     });
@@ -30,7 +30,7 @@ export class TokenService {
   public verifyToken(payload: VerifyTokenPayload): Record<string, string> {
     const { token } = payload;
 
-    const data = jwt.verify(token, this.config.jwtSecret, { algorithms: ['HS512'] });
+    const data = verify(token, this.config.jwtSecret, { algorithms: ['HS512'] });
 
     return data as Record<string, string>;
   }

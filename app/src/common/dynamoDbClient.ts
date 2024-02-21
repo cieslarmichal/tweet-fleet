@@ -21,7 +21,10 @@ export class DynamoDbClientFactory {
       wrapNumbers: false,
     };
 
-    const translateConfig = { marshallOptions, unmarshallOptions };
+    const translateConfig = {
+      marshallOptions,
+      unmarshallOptions,
+    };
 
     return DynamoDBDocumentClient.from(dynamoDbClient, translateConfig);
   }

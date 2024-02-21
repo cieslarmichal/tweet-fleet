@@ -1,4 +1,4 @@
-import { TokenService } from '../../../application/services/tokenService/tokenService.js';
+import { type TokenService } from '../../../application/services/tokenService/tokenService.js';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 
 export interface VerifyBearerTokenPayload {

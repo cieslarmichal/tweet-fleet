@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Handler, ProxyResult } from 'aws-lambda';
+import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda';
 
 // const databaseName = process.env[EnvKey.databaseName] as string;
 // const host = process.env[EnvKey.databaseHost] as string;

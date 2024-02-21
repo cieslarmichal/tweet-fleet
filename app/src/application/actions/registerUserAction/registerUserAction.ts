@@ -1,7 +1,7 @@
 import { ResourceAlreadyExistsError } from '../../../common/errors/resourceAlreadyExistsError.js';
-import { LoggerClient } from '../../../common/loggerClient.js';
-import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
-import { HashService } from '../../services/hashService/hashService.js';
+import { type LoggerClient } from '../../../common/loggerClient.js';
+import { type UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
+import { type HashService } from '../../services/hashService/hashService.js';
 
 export interface RegisterUserActionPayload {
   readonly email: string;

@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Handler, ProxyResult } from 'aws-lambda';
+import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda';
 
 // const databaseName = process.env[EnvKey.databaseName] as string;
 // const host = process.env[EnvKey.databaseHost] as string;
@@ -23,9 +23,7 @@ import { APIGatewayEvent, Handler, ProxyResult } from 'aws-lambda';
 export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResult> => {
   const authorizationHeader = event.headers['Authorization'];
 
-  const [_, accessToken] = authorizationHeader?.split(' ') as string[];
-
-  console.log({ accessToken });
+  console.log({ authorizationHeader });
 
   // const { userId } = await verifyAccessTokenQuery.verifyAccessToken({ accessToken: accessToken as string });
 

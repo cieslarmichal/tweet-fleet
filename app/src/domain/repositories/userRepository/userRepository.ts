@@ -1,7 +1,10 @@
-import { User } from '../../entities/user/user.js';
-import { v4 as uuidv4 } from 'uuid';
-import { DynamoDbClient } from '../../../common/dynamoDbClient.js';
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { v4 as uuidv4 } from 'uuid';
+
+import { type DynamoDbClient } from '../../../common/dynamoDbClient.js';
+import { type User } from '../../entities/user/user.js';
 
 export interface CreateUserPayload {
   readonly email: string;
