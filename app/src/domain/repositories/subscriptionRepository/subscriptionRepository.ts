@@ -19,30 +19,29 @@ export interface FindSubscriptionsPayload {
   readonly userId: string;
 }
 
+export interface FindSubscriptionPayload {
+  readonly userId: string;
+  readonly twitterUsername: string;
+}
+
 export class SubscriptionRepository {
   private readonly tableName = 'subscriptions';
 
   public constructor(private readonly dynamoDbClient: DynamoDbClient) {}
 
-  public async createSubscription(payload: CreateSubscriptionPayload): Promise<Subscription> {
+  public async createSubscription(payload: CreateSubscriptionPayload): Promise<void> {
     const { userId, twitterUsername } = payload;
-
-    const id = uuidv4();
-
-    const subscription: Subscription = {
-      id,
-      userId,
-      twitterUsername,
-    };
 
     const command = new PutCommand({
       TableName: this.tableName,
-      Item: subscription,
+      Item: {
+        id: uuidv4(),
+        userId,
+        twitterUsername,
+      },
     });
 
     await this.dynamoDbClient.send(command);
-
-    return subscription;
   }
 
   public async findSubscriptions(payload: FindSubscriptionsPayload): Promise<Subscription[]> {
@@ -66,6 +65,31 @@ export class SubscriptionRepository {
     }
 
     return response.Items as unknown as Subscription[];
+  }
+
+  public async findSubscription(payload: FindSubscriptionPayload): Promise<Subscription | undefined> {
+    const { userId, twitterUsername } = payload;
+
+    const command = new ScanCommand({
+      TableName: this.tableName,
+      FilterExpression: '#userId = :userId AND #twitterUsername = :twitterUsername',
+      ExpressionAttributeNames: {
+        '#userId': 'userId',
+        '#twitterUsername': 'twitterUsername',
+      },
+      ExpressionAttributeValues: {
+        ':userId': userId,
+        ':twitterUsername': twitterUsername,
+      },
+    });
+
+    const response = await this.dynamoDbClient.send(command);
+
+    if (!response.Items?.length) {
+      return undefined;
+    }
+
+    return response.Items[0] as unknown as Subscription;
   }
 
   public async deleteSubscription(payload: DeleteSubscriptionPayload): Promise<void> {

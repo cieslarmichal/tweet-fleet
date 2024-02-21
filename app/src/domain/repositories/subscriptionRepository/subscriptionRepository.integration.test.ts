@@ -23,12 +23,15 @@ describe('SubscriptionRepository', () => {
     it('creates a Subscription', async () => {
       const { twitterUsername, userId } = SubscriptionTestFactory.create();
 
-      const subscription = await subscriptionRepository.createSubscription({
+      await subscriptionRepository.createSubscription({
         twitterUsername,
         userId,
       });
 
-      const foundSubscription = await subscriptionTestUtils.findById({ id: subscription.id });
+      const foundSubscription = await subscriptionTestUtils.find({
+        twitterUsername,
+        userId,
+      });
 
       expect(foundSubscription?.userId).toEqual(userId);
 
@@ -47,6 +50,18 @@ describe('SubscriptionRepository', () => {
       expect(foundSubscriptions.length).toEqual(1);
 
       expect(foundSubscriptions[0]).toEqual(subscription);
+    });
+  });
+
+  describe('Delete', () => {
+    it('deletes a Subscription', async () => {
+      const subscription = await subscriptionTestUtils.createAndPersist();
+
+      await subscriptionRepository.deleteSubscription({ id: subscription.id });
+
+      const foundSubscription = await subscriptionTestUtils.findById({ id: subscription.id });
+
+      expect(foundSubscription).toBeUndefined();
     });
   });
 });

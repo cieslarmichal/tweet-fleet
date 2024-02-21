@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 import { type DynamoDbClient } from '../../common/dynamoDbClient.js';
 import { type Subscription } from '../../domain/entities/subscription/subscription.js';
@@ -12,6 +12,11 @@ interface CreateAndPersistPayload {
 
 interface FindByIdPayload {
   id: string;
+}
+
+interface FindPayload {
+  twitterUsername: string;
+  userId: string;
 }
 
 export class SubscriptionTestUtils {
@@ -53,5 +58,30 @@ export class SubscriptionTestUtils {
     }
 
     return response.Item as unknown as Subscription;
+  }
+
+  public async find(payload: FindPayload): Promise<Subscription | undefined> {
+    const { userId, twitterUsername } = payload;
+
+    const command = new ScanCommand({
+      TableName: this.tableName,
+      FilterExpression: '#userId = :userId AND #twitterUsername = :twitterUsername',
+      ExpressionAttributeNames: {
+        '#userId': 'userId',
+        '#twitterUsername': 'twitterUsername',
+      },
+      ExpressionAttributeValues: {
+        ':userId': userId,
+        ':twitterUsername': twitterUsername,
+      },
+    });
+
+    const response = await this.dynamoDbClient.send(command);
+
+    if (!response.Items?.length) {
+      return undefined;
+    }
+
+    return response.Items[0] as unknown as Subscription;
   }
 }
