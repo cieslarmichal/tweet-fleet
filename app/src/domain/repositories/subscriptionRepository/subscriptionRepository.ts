@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { DeleteCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 
 import { type DynamoDbClient } from '../../../common/dynamoDbClient.js';
@@ -22,6 +22,10 @@ export interface FindSubscriptionsPayload {
 export interface FindSubscriptionPayload {
   readonly userId: string;
   readonly twitterUsername: string;
+}
+
+export interface FindSubscriptionByIdPayload {
+  readonly id: string;
 }
 
 export class SubscriptionRepository {
@@ -90,6 +94,23 @@ export class SubscriptionRepository {
     }
 
     return response.Items[0] as unknown as Subscription;
+  }
+
+  public async findSubscriptionById(payload: FindSubscriptionByIdPayload): Promise<Subscription | undefined> {
+    const { id } = payload;
+
+    const command = new GetCommand({
+      TableName: this.tableName,
+      Key: { id },
+    });
+
+    const response = await this.dynamoDbClient.send(command);
+
+    if (!response.Item) {
+      return undefined;
+    }
+
+    return response.Item as unknown as Subscription;
   }
 
   public async deleteSubscription(payload: DeleteSubscriptionPayload): Promise<void> {
