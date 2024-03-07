@@ -31,7 +31,7 @@ export class DeleteSubscriptionAction {
 
     await this.subscriptionRepository.deleteSubscription({ id });
 
-    this.logger.info({
+    this.logger.debug({
       message: 'Subscription deleted.',
       context: { id },
     });

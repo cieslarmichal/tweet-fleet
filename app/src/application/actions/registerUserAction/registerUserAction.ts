@@ -39,7 +39,7 @@ export class RegisterUserAction {
       password: hashedPassword,
     });
 
-    this.logger.info({
+    this.logger.debug({
       message: 'User registered.',
       context: { email },
     });

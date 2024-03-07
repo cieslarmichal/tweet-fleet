@@ -42,7 +42,7 @@ export class CreateSubscriptionAction {
       twitterUsername,
     });
 
-    this.logger.info({
+    this.logger.debug({
       message: 'Subscription created.',
       context: {
         userId,
