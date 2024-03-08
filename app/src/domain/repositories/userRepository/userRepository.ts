@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, ScanCommand, type ScanCommandInput } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 
 import { type DynamoDbClient } from '../../../common/dynamoDbClient.js';
@@ -17,6 +17,16 @@ export interface FindUserByIdPayload {
 
 export interface FindUserByEmailPayload {
   readonly email: string;
+}
+
+export interface FindAllUsersPayload {
+  readonly limit: number;
+  readonly startKey?: Record<string, unknown> | unknown;
+}
+
+export interface FindAllUsersResult {
+  readonly users: User[];
+  readonly lastEvaluatedKey: Record<string, unknown> | undefined;
 }
 
 export class UserRepository {
@@ -77,5 +87,27 @@ export class UserRepository {
     }
 
     return response.Items[0] as unknown as User;
+  }
+
+  public async findAllUsers(payload: FindAllUsersPayload): Promise<FindAllUsersResult> {
+    const { limit, startKey } = payload;
+
+    const commandInput: ScanCommandInput = {
+      TableName: this.tableName,
+      Limit: limit,
+    };
+
+    if (startKey) {
+      commandInput.ExclusiveStartKey = startKey;
+    }
+
+    const command = new ScanCommand(commandInput);
+
+    const response = await this.dynamoDbClient.send(command);
+
+    return {
+      users: response.Items as User[],
+      lastEvaluatedKey: response.LastEvaluatedKey,
+    };
   }
 }
