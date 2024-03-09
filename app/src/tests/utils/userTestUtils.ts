@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 import { type DynamoDbClient } from '../../common/dynamoDbClient.js';
 import { type User } from '../../domain/entities/user/user.js';
@@ -80,5 +80,28 @@ export class UserTestUtils {
     }
 
     return response.Items[0] as unknown as User;
+  }
+
+  public async truncate(): Promise<void> {
+    const scanCommand = new ScanCommand({
+      TableName: this.tableName,
+    });
+
+    const data = await this.dynamoDbClient.send(scanCommand);
+
+    if (!data.Items) {
+      return;
+    }
+
+    for (const item of data.Items) {
+      const deleteCommand = new DeleteCommand({
+        TableName: this.tableName,
+        Key: {
+          id: item['id'],
+        },
+      });
+
+      await this.dynamoDbClient.send(deleteCommand);
+    }
   }
 }

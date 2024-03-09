@@ -29,7 +29,7 @@ export class LoginUserAction {
 
     this.loggerService.debug({
       message: 'Logging User in...',
-      context: { email },
+      email,
     });
 
     const user = await this.userRepository.findUserByEmail({ email });
@@ -62,11 +62,9 @@ export class LoginUserAction {
 
     this.loggerService.info({
       message: 'User logged in.',
-      context: {
-        email,
-        userId: user.id,
-        expiresIn,
-      },
+      email,
+      userId: user.id,
+      expiresIn,
     });
 
     return {

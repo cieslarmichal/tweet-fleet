@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, describe } from 'vitest';
+import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { CreateSubscriptionAction } from './createSubscriptionAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
@@ -23,6 +23,12 @@ describe('CreateSubscriptionAction', () => {
     createSubscriptionAction = new CreateSubscriptionAction(subscriptionRepository, logger);
 
     subscriptionTestUtils = new SubscriptionTestUtils(dynamodbClient);
+
+    await subscriptionTestUtils.truncate();
+  });
+
+  afterEach(async () => {
+    await subscriptionTestUtils.truncate();
   });
 
   it('creates a Subscription', async () => {

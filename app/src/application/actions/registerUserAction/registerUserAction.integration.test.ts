@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, describe } from 'vitest';
+import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { RegisterUserAction } from './registerUserAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
@@ -28,6 +28,12 @@ describe('RegisterUserAction', () => {
     registerUserAction = new RegisterUserAction(userRepository, hashService, logger);
 
     userTestUtils = new UserTestUtils(dynamodbClient);
+
+    await userTestUtils.truncate();
+  });
+
+  afterEach(async () => {
+    await userTestUtils.truncate();
   });
 
   it('creates a User', async () => {

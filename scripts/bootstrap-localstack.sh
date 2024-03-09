@@ -10,3 +10,7 @@ awslocal dynamodb create-table \
    --attribute-definitions AttributeName=id,AttributeType=S \
    --key-schema AttributeName=id,KeyType=HASH \
    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
+
+awslocal sqs create-queue --queue-name users
+
+awslocal sqs create-queue --queue-name tweets

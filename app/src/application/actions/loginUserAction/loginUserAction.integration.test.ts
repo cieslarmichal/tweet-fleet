@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, describe } from 'vitest';
+import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { LoginUserAction } from './loginUserAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
@@ -34,6 +34,12 @@ describe('LoginUserAction', () => {
     loginUserAction = new LoginUserAction(userRepository, logger, hashService, tokenService, config);
 
     userTestUtils = new UserTestUtils(dynamodbClient);
+
+    await userTestUtils.truncate();
+  });
+
+  afterEach(async () => {
+    await userTestUtils.truncate();
   });
 
   it('returns tokens', async () => {

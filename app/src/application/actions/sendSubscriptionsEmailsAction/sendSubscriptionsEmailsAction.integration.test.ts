@@ -1,59 +1,63 @@
-import { faker } from '@faker-js/faker';
-import { beforeEach, expect, it, describe } from 'vitest';
+// import { faker } from '@faker-js/faker';
+// import { beforeEach, expect, it, describe } from 'vitest';
 
-import { FindUserSubscriptionsAction } from './findUserSubscriptionsAction.js';
-import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-import { LoggerClientFactory } from '../../../common/loggerClient.js';
-import { config } from '../../../config/config.js';
-import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
-import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
-import { SubscriptionTestUtils } from '../../../tests/utils/subscriptionTestUtils.js';
-import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
+// import { FindUserSubscriptionsAction } from './findUserSubscriptionsAction.js';
+// import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+// import { LoggerClientFactory } from '../../../common/loggerClient.js';
+// import { config } from '../../../config/config.js';
+// import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
+// import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
+// import { SubscriptionTestUtils } from '../../../tests/utils/subscriptionTestUtils.js';
+// import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
 
-describe('FindUserSubscriptionsAction', () => {
-  let findUserSubscriptionsAction: FindUserSubscriptionsAction;
+// describe('FindUserSubscriptionsAction', () => {
+//   let findUserSubscriptionsAction: FindUserSubscriptionsAction;
 
-  let subscriptionTestUtils: SubscriptionTestUtils;
+//   let subscriptionTestUtils: SubscriptionTestUtils;
 
-  let userTestUtils: UserTestUtils;
+//   let userTestUtils: UserTestUtils;
 
-  beforeEach(async () => {
-    const dynamodbClient = DynamoDbClientFactory.create({ endpoint: 'http://127.0.0.1:4566' });
+//   beforeEach(async () => {
+//     const dynamodbClient = DynamoDbClientFactory.create({ endpoint: 'http://127.0.0.1:4566' });
 
-    const subscriptionRepository = new SubscriptionRepository(dynamodbClient);
+//     const subscriptionRepository = new SubscriptionRepository(dynamodbClient);
 
-    const userRepository = new UserRepository(dynamodbClient);
+//     const userRepository = new UserRepository(dynamodbClient);
 
-    const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
+//     const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
 
-    findUserSubscriptionsAction = new FindUserSubscriptionsAction(userRepository, subscriptionRepository, logger);
+//     findUserSubscriptionsAction = new FindUserSubscriptionsAction(userRepository, subscriptionRepository, logger);
 
-    subscriptionTestUtils = new SubscriptionTestUtils(dynamodbClient);
+//     subscriptionTestUtils = new SubscriptionTestUtils(dynamodbClient);
 
-    userTestUtils = new UserTestUtils(dynamodbClient);
-  });
+//     userTestUtils = new UserTestUtils(dynamodbClient);
+//   });
 
-  it('fetches User Subscriptions', async () => {
-    const user = await userTestUtils.createAndPersist();
+// afterEach(async () => {
+//   await userTestUtils.truncate();
+// });
 
-    const subscription = await subscriptionTestUtils.createAndPersist({ input: { userId: user.id } });
+//   it('fetches User Subscriptions', async () => {
+//     const user = await userTestUtils.createAndPersist();
 
-    const { subscriptions } = await findUserSubscriptionsAction.execute({ userId: user.id });
+//     const subscription = await subscriptionTestUtils.createAndPersist({ input: { userId: user.id } });
 
-    expect(subscriptions).toEqual([subscription]);
-  });
+//     const { subscriptions } = await findUserSubscriptionsAction.execute({ userId: user.id });
 
-  it('throws an error when a User does not exist', async () => {
-    const userId = faker.string.uuid();
+//     expect(subscriptions).toEqual([subscription]);
+//   });
 
-    try {
-      await findUserSubscriptionsAction.execute({ userId });
-    } catch (error) {
-      expect(error).toBeDefined();
+//   it('throws an error when a User does not exist', async () => {
+//     const userId = faker.string.uuid();
 
-      return;
-    }
+//     try {
+//       await findUserSubscriptionsAction.execute({ userId });
+//     } catch (error) {
+//       expect(error).toBeDefined();
 
-    expect.fail();
-  });
-});
+//       return;
+//     }
+
+//     expect.fail();
+//   });
+// });

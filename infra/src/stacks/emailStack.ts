@@ -1,6 +1,7 @@
 import * as core from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+
 import { NodejsLambda } from './common/nodejsLambda.js';
 
 export class EmailStack extends core.Stack {

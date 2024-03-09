@@ -18,10 +18,8 @@ export class CreateSubscriptionAction {
 
     this.logger.debug({
       message: 'Creating Subscription...',
-      context: {
-        userId,
-        twitterUsername,
-      },
+      userId,
+      twitterUsername,
     });
 
     const existingSubscription = await this.subscriptionRepository.findSubscription({
@@ -44,10 +42,8 @@ export class CreateSubscriptionAction {
 
     this.logger.debug({
       message: 'Subscription created.',
-      context: {
-        userId,
-        twitterUsername,
-      },
+      userId,
+      twitterUsername,
     });
   }
 }

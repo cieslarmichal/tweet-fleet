@@ -20,7 +20,7 @@ export class RegisterUserAction {
 
     this.logger.debug({
       message: 'Registering User...',
-      context: { email },
+      email,
     });
 
     const existingUser = await this.userRepository.findUserByEmail({ email });
@@ -41,7 +41,7 @@ export class RegisterUserAction {
 
     this.logger.debug({
       message: 'User registered.',
-      context: { email },
+      email,
     });
   }
 }

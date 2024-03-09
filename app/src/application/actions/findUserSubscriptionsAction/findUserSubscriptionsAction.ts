@@ -24,7 +24,7 @@ export class FindUserSubscriptionsAction {
 
     this.logger.debug({
       message: 'Fetching User Subscriptions...',
-      context: { userId },
+      userId,
     });
 
     const user = await this.userRepository.findUserById({ id: userId });
@@ -40,10 +40,8 @@ export class FindUserSubscriptionsAction {
 
     this.logger.debug({
       message: 'User Subscriptions fetched.',
-      context: {
-        userId,
-        subscriptions,
-      },
+      userId,
+      subscriptions,
     });
 
     return { subscriptions };

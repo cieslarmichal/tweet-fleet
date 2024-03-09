@@ -10,6 +10,8 @@ const configSchema = Type.Object({
     apiKey: Type.String({ minLength: 1 }),
     senderEmail: Type.String({ minLength: 1 }),
   }),
+  usersSqsUrl: Type.String({ minLength: 1 }),
+  tweetsSqsUrl: Type.String({ minLength: 1 }),
 });
 
 const configInput = {
@@ -21,6 +23,8 @@ const configInput = {
     apiKey: process.env['SENDGRID_API_KEY'],
     senderEmail: 'michal.andrzej.cieslar@gmail.com',
   },
+  usersSqsUrl: process.env['USERS_SQS_URL'],
+  tweetsSqsUrl: process.env['TWEETS_SQS_URL'],
 };
 
 export const config = Value.Decode(configSchema, configInput);

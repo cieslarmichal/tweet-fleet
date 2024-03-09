@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { beforeEach, expect, it, describe } from 'vitest';
+import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { FindUserSubscriptionsAction } from './findUserSubscriptionsAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
@@ -31,6 +31,16 @@ describe('FindUserSubscriptionsAction', () => {
     subscriptionTestUtils = new SubscriptionTestUtils(dynamodbClient);
 
     userTestUtils = new UserTestUtils(dynamodbClient);
+
+    await subscriptionTestUtils.truncate();
+
+    await userTestUtils.truncate();
+  });
+
+  afterEach(async () => {
+    await subscriptionTestUtils.truncate();
+
+    await userTestUtils.truncate();
   });
 
   it('fetches User Subscriptions', async () => {

@@ -5,8 +5,9 @@ services:
     image: localstack/localstack
     ports:
       - '4566:4566'
+      - '4571:4571'
     environment:
-      SERVICES: dynamodb
+      SERVICES: dynamodb, sqs
       AWS_DEFAULT_REGION: eu-central-1
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
