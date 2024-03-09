@@ -1,4 +1,5 @@
 import * as core from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import type * as elasticache from 'aws-cdk-lib/aws-elasticache';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
@@ -13,13 +14,15 @@ export interface ProcessorStackProps extends core.StackProps {
   readonly usersTable: core.aws_dynamodb.Table;
   readonly subscriptionsTable: core.aws_dynamodb.Table;
   readonly redis: elasticache.CfnCacheCluster;
+  readonly vpc: ec2.Vpc;
+  readonly securityGroup: ec2.SecurityGroup;
 }
 
 export class ProcessorStack extends core.Stack {
   public constructor(scope: core.App, id: string, props: ProcessorStackProps) {
     super(scope, id, props);
 
-    const { config, subscriptionsTable, usersTable, redis } = props;
+    const { config, subscriptionsTable, usersTable, vpc, securityGroup } = props;
 
     const usersQueue = new sqs.Queue(this, 'UsersQueue', {
       queueName: 'users',
@@ -55,6 +58,11 @@ export class ProcessorStack extends core.Stack {
     const collectTweetsLambda = new NodejsLambda(this, 'collectTweetsLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/collectTweetsLambdaHandler/collectTweetsLambdaHandler.ts`,
       environment: lambdaEnvironment,
+      vpc: vpc as ec2.IVpc,
+      securityGroups: [securityGroup],
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      },
     });
 
     subscriptionsTable.grantReadData(collectTweetsLambda);
