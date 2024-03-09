@@ -7,6 +7,7 @@ import { ApiStack } from './stacks/apiStack.js';
 import { CacheStack } from './stacks/cacheStack.js';
 import { DatabaseStack } from './stacks/databaseStack.js';
 import { ProcessorStack } from './stacks/processorStack.js';
+import { VpcStack } from './stacks/vpcStack.js';
 
 const jwtSecret = process.env['JWT_SECRET'];
 
@@ -31,9 +32,14 @@ const config: Config = {
   sendGridApiKey,
 };
 
+const vpcStack = new VpcStack(app, 'VpcStack', { env });
+
 const databaseStack = new DatabaseStack(app, 'DatabaseStack', { env });
 
-const cacheStack = new CacheStack(app, 'CacheStack', { env });
+const cacheStack = new CacheStack(app, 'CacheStack', {
+  env,
+  vpc: vpcStack.vpc,
+});
 
 new ApiStack(app, 'ApiStack', {
   env,
@@ -47,4 +53,5 @@ new ProcessorStack(app, 'ProcessorStack', {
   config,
   subscriptionsTable: databaseStack.subscriptionsTable,
   usersTable: databaseStack.usersTable,
+  redis: cacheStack.redis,
 });

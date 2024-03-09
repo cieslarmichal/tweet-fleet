@@ -1,4 +1,5 @@
 import * as core from 'aws-cdk-lib';
+import type * as elasticache from 'aws-cdk-lib/aws-elasticache';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -11,13 +12,14 @@ export interface ProcessorStackProps extends core.StackProps {
   readonly config: Config;
   readonly usersTable: core.aws_dynamodb.Table;
   readonly subscriptionsTable: core.aws_dynamodb.Table;
+  readonly redis: elasticache.CfnCacheCluster;
 }
 
 export class ProcessorStack extends core.Stack {
   public constructor(scope: core.App, id: string, props: ProcessorStackProps) {
     super(scope, id, props);
 
-    const { config, subscriptionsTable, usersTable } = props;
+    const { config, subscriptionsTable, usersTable, redis } = props;
 
     const usersQueue = new sqs.Queue(this, 'UsersQueue', {
       queueName: 'users',

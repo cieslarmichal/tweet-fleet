@@ -2,11 +2,17 @@ import * as core from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elasticache from 'aws-cdk-lib/aws-elasticache';
 
-export class CacheStack extends core.Stack {
-  public readonly cache: elasticache.CfnCacheCluster;
+export interface CacheStackProps extends core.StackProps {
+  readonly vpc: ec2.Vpc;
+}
 
-  public constructor(scope: core.App, id: string, props: core.StackProps) {
+export class CacheStack extends core.Stack {
+  public readonly redis: elasticache.CfnCacheCluster;
+
+  public constructor(scope: core.App, id: string, props: CacheStackProps) {
     super(scope, id, props);
+
+    const { vpc } = props;
 
     const securityGroup = new ec2.SecurityGroup(this, 'ElastiCacheSecurityGroup', {
       vpc: vpc as ec2.IVpc,
@@ -17,7 +23,7 @@ export class CacheStack extends core.Stack {
       subnetIds: vpc.privateSubnets.map((subnet) => subnet.subnetId),
     });
 
-    this.cache = new elasticache.CfnCacheCluster(this, 'MyElastiCache', {
+    this.redis = new elasticache.CfnCacheCluster(this, 'MyElastiCache', {
       cacheNodeType: 'cache.t2.micro',
       engine: 'redis',
       numCacheNodes: 1,
