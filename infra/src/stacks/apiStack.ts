@@ -1,33 +1,20 @@
-import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as core from 'aws-cdk-lib';
-import { Config } from '../config.js';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+
 import { NodejsLambda } from './common/nodejsLambda.js';
+import { type Config } from '../config.js';
 
 export interface ApiStackProps extends core.StackProps {
   readonly config: Config;
+  readonly usersTable: core.aws_dynamodb.Table;
+  readonly subscriptionsTable: core.aws_dynamodb.Table;
 }
 
 export class ApiStack extends core.Stack {
   public constructor(scope: core.App, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
-    const { config } = props;
-
-    const usersTable = new dynamodb.Table(this, 'UsersTable', {
-      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'email', type: dynamodb.AttributeType.STRING },
-      tableName: 'users',
-      removalPolicy: core.RemovalPolicy.DESTROY,
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-    });
-
-    const subscriptionsTable = new dynamodb.Table(this, 'SubscriptionsTable', {
-      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-      tableName: 'subscriptions',
-      removalPolicy: core.RemovalPolicy.DESTROY,
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-    });
+    const { config, usersTable, subscriptionsTable } = props;
 
     const lambdaEnvironment = {
       ['JWT_SECRET']: config.jwtSecret,
@@ -37,7 +24,6 @@ export class ApiStack extends core.Stack {
     const registerUserLambda = new NodejsLambda(this, 'registerUserLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/registerUserLambdaHandler/registerUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
-      timeout: core.Duration.minutes(3),
     });
 
     usersTable.grantReadWriteData(registerUserLambda);
@@ -45,7 +31,6 @@ export class ApiStack extends core.Stack {
     const loginUserLambda = new NodejsLambda(this, 'loginUserLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/loginUserLambdaHandler/loginUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
-      timeout: core.Duration.minutes(3),
     });
 
     usersTable.grantReadWriteData(loginUserLambda);
@@ -53,28 +38,28 @@ export class ApiStack extends core.Stack {
     const createSubscriptionLambda = new NodejsLambda(this, 'createSubscriptionLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/createSubscriptionLambdaHandler/createSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
-      timeout: core.Duration.minutes(3),
     });
 
     usersTable.grantReadData(createSubscriptionLambda);
+
     subscriptionsTable.grantReadWriteData(createSubscriptionLambda);
 
     const deleteSubscriptionLambda = new NodejsLambda(this, 'deleteSubscriptionLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/deleteSubscriptionLambdaHandler/deleteSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
-      timeout: core.Duration.minutes(3),
     });
 
     usersTable.grantReadData(deleteSubscriptionLambda);
+
     subscriptionsTable.grantReadWriteData(deleteSubscriptionLambda);
 
     const getSubscriptionsLambda = new NodejsLambda(this, 'getSubscriptionsLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/getSubscriptionsLambdaHandler/getSubscriptionsLambdaHandler.ts`,
       environment: lambdaEnvironment,
-      timeout: core.Duration.minutes(3),
     });
 
     usersTable.grantReadData(getSubscriptionsLambda);
+
     subscriptionsTable.grantReadWriteData(getSubscriptionsLambda);
 
     const restApi = new apigateway.RestApi(this, 'Api', {

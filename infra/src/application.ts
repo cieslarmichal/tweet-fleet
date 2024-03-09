@@ -2,14 +2,18 @@
 import 'source-map-support/register.js';
 import * as core from 'aws-cdk-lib';
 
-import { Config } from './config.js';
-import { EmailStack } from './stacks/emailStack.js';
+import { type Config } from './config.js';
 import { ApiStack } from './stacks/apiStack.js';
+import { DatabaseStack } from './stacks/databaseStack.js';
+import { ProcessorStack } from './stacks/processorStack.js';
 
 const jwtSecret = process.env['JWT_SECRET'];
+
 const hashSaltRounds = process.env['HASH_SALT_ROUNDS'];
 
-if (!jwtSecret || !hashSaltRounds) {
+const sendGridApiKey = process.env['SENDGRID_API_KEY'];
+
+if (!jwtSecret || !hashSaltRounds || !sendGridApiKey) {
   throw new Error('Missing environment variables');
 }
 
@@ -23,8 +27,21 @@ const env = {
 const config: Config = {
   jwtSecret,
   hashSaltRounds,
+  sendGridApiKey,
 };
 
-new EmailStack(app, 'EmailStack', { env });
+const databaseStack = new DatabaseStack(app, 'DatabaseStack', { env });
 
-new ApiStack(app, 'ApiStack', { env, config });
+new ApiStack(app, 'ApiStack', {
+  env,
+  config,
+  subscriptionsTable: databaseStack.subscriptionsTable,
+  usersTable: databaseStack.usersTable,
+});
+
+new ProcessorStack(app, 'ProcessorStack', {
+  env,
+  config,
+  subscriptionsTable: databaseStack.subscriptionsTable,
+  usersTable: databaseStack.usersTable,
+});
