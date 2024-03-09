@@ -1,6 +1,7 @@
 import * as core from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 import { NodejsLambda } from './common/nodejsLambda.js';
@@ -48,5 +49,29 @@ export class ProcessorStack extends core.Stack {
     usersTable.grantReadData(collectUsersLambda);
 
     usersQueue.grantSendMessages(collectUsersLambda);
+
+    const collectTweetsLambda = new NodejsLambda(this, 'collectTweetsLambda', {
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/collectTweetsLambdaHandler/collectTweetsLambdaHandler.ts`,
+      environment: lambdaEnvironment,
+    });
+
+    subscriptionsTable.grantReadData(collectTweetsLambda);
+
+    collectTweetsLambda.addEventSource(
+      new SqsEventSource(usersQueue, {
+        batchSize: 1,
+      }),
+    );
+
+    const sendAggregatedTweetsLambda = new NodejsLambda(this, 'sendAggregatedTweetsLambda', {
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/sendAggregatedTweetsLambdaHandler/sendAggregatedTweetsLambdaHandler.ts`,
+      environment: lambdaEnvironment,
+    });
+
+    sendAggregatedTweetsLambda.addEventSource(
+      new SqsEventSource(tweetsQueue, {
+        batchSize: 1,
+      }),
+    );
   }
 }
