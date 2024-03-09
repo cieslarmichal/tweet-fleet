@@ -8,8 +8,6 @@ export class CacheStack extends core.Stack {
   public constructor(scope: core.App, id: string, props: core.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'MainVpc', { maxAzs: 2 });
-
     const securityGroup = new ec2.SecurityGroup(this, 'ElastiCacheSecurityGroup', {
       vpc: vpc as ec2.IVpc,
     });

@@ -4,6 +4,7 @@ import * as core from 'aws-cdk-lib';
 
 import { type Config } from './config.js';
 import { ApiStack } from './stacks/apiStack.js';
+import { CacheStack } from './stacks/cacheStack.js';
 import { DatabaseStack } from './stacks/databaseStack.js';
 import { ProcessorStack } from './stacks/processorStack.js';
 
@@ -31,6 +32,8 @@ const config: Config = {
 };
 
 const databaseStack = new DatabaseStack(app, 'DatabaseStack', { env });
+
+const cacheStack = new CacheStack(app, 'CacheStack', { env });
 
 new ApiStack(app, 'ApiStack', {
   env,
