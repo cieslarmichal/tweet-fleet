@@ -4,7 +4,7 @@ import { SendUsersMessagesAction } from './sendUsersMessagesAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
 import { SqsClientFactory } from '../../../common/sqsClient.js';
-import { config } from '../../../config/config.js';
+import { ProcessorConfigFactory } from '../../../config/processorConfig.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { UserQueueTestUtils } from '../../../tests/utils/userQueueTestUtils.js';
 import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
@@ -22,6 +22,8 @@ describe('SendUsersMessagesAction', () => {
     const sqsClient = SqsClientFactory.create({ endpoint: 'http://127.0.0.1:4566' });
 
     const userRepository = new UserRepository(dynamodbClient);
+
+    const config = ProcessorConfigFactory.create();
 
     const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
 

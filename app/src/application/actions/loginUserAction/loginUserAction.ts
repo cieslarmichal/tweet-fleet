@@ -1,6 +1,6 @@
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { type LoggerClient } from '../../../common/loggerClient.js';
-import { type Config } from '../../../config/config.js';
+import { type ApiConfig } from '../../../config/apiConfig.js';
 import { type UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { type HashService } from '../../services/hashService/hashService.js';
 import { type TokenService } from '../../services/tokenService/tokenService.js';
@@ -21,7 +21,7 @@ export class LoginUserAction {
     private readonly loggerService: LoggerClient,
     private readonly hashService: HashService,
     private readonly tokenService: TokenService,
-    private readonly config: Config,
+    private readonly config: ApiConfig,
   ) {}
 
   public async execute(payload: LoginUserActionPayload): Promise<LoginUserActionResult> {

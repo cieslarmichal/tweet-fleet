@@ -4,7 +4,7 @@ import { LoginUserAction } from './loginUserAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerClientFactory } from '../../../common/loggerClient.js';
-import { config } from '../../../config/config.js';
+import { type ApiConfig, ApiConfigFactory } from '../../../config/apiConfig.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
 import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
@@ -20,10 +20,14 @@ describe('LoginUserAction', () => {
 
   let tokenService: TokenService;
 
+  let config: ApiConfig;
+
   beforeEach(async () => {
     const dynamodbClient = DynamoDbClientFactory.create({ endpoint: 'http://127.0.0.1:4566' });
 
     const userRepository = new UserRepository(dynamodbClient);
+
+    config = ApiConfigFactory.create();
 
     hashService = new HashService({ hashSaltRounds: config.hashSaltRounds });
 

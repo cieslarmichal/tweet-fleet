@@ -8,7 +8,7 @@ export interface DynamoDbClientConfig {
 export type DynamoDbClient = DynamoDBDocumentClient;
 
 export class DynamoDbClientFactory {
-  public static create(config: DynamoDbClientConfig): DynamoDbClient {
+  public static create(config?: DynamoDbClientConfig): DynamoDbClient {
     const dynamoDbClient = new DynamoDBClient({ ...config });
 
     const marshallOptions = {

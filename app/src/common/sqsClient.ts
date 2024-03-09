@@ -7,7 +7,7 @@ export interface SqsClientConfig {
 export type SqsClient = SQSClient;
 
 export class SqsClientFactory {
-  public static create(config: SqsClientConfig): SqsClient {
+  public static create(config?: SqsClientConfig): SqsClient {
     return new SQSClient({ ...config });
   }
 }
