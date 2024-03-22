@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "3.3.2",
     "pino": "^8.19.0",
+    "twitter-api-client": "^1.6.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
