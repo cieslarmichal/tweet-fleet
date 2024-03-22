@@ -3,7 +3,7 @@
 
 // import { FindUserSubscriptionsAction } from './findUserSubscriptionsAction.js';
 // import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-// import { LoggerClientFactory } from '../../../common/loggerClient.js';
+// import { LoggerServiceFactory } from '../../../common/loggerClient.js';
 // import { config } from '../../../config/config.js';
 // import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 // import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
@@ -24,7 +24,7 @@
 
 //     const userRepository = new UserRepository(dynamodbClient);
 
-//     const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
+//     const logger = LoggerServiceFactory.create({ logLevel: config.logLevel });
 
 //     findUserSubscriptionsAction = new FindUserSubscriptionsAction(userRepository, subscriptionRepository, logger);
 

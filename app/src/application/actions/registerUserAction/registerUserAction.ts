@@ -1,5 +1,5 @@
 import { ResourceAlreadyExistsError } from '../../../common/errors/resourceAlreadyExistsError.js';
-import { type LoggerClient } from '../../../common/loggerClient.js';
+import { type LoggerService } from '../../../common/loggerService.js';
 import { type UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { type HashService } from '../../services/hashService/hashService.js';
 
@@ -12,7 +12,7 @@ export class RegisterUserAction {
   public constructor(
     private readonly userRepository: UserRepository,
     private readonly hashService: HashService,
-    private readonly logger: LoggerClient,
+    private readonly logger: LoggerService,
   ) {}
 
   public async execute(payload: RegisterUserActionPayload): Promise<void> {

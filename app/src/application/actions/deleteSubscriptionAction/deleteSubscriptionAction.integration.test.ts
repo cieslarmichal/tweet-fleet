@@ -3,7 +3,7 @@ import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { DeleteSubscriptionAction } from './deleteSubscriptionAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 import { SubscriptionTestUtils } from '../../../tests/utils/subscriptionTestUtils.js';
 
@@ -17,7 +17,7 @@ describe('DeleteSubscriptionAction', () => {
 
     const subscriptionRepository = new SubscriptionRepository(dynamodbClient);
 
-    const logger = LoggerClientFactory.create({ logLevel: 'debug' });
+    const logger = LoggerServiceFactory.create({ logLevel: 'debug' });
 
     deleteSubscriptionAction = new DeleteSubscriptionAction(subscriptionRepository, logger);
 

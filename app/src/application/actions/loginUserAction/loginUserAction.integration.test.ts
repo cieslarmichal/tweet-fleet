@@ -3,7 +3,7 @@ import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 import { LoginUserAction } from './loginUserAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
-import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { type ApiConfig, ApiConfigFactory } from '../../../config/apiConfig.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
@@ -31,7 +31,7 @@ describe('LoginUserAction', () => {
 
     hashService = new HashService({ hashSaltRounds: config.hashSaltRounds });
 
-    const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
+    const logger = LoggerServiceFactory.create({ logLevel: config.logLevel });
 
     tokenService = new TokenService({ jwtSecret: config.jwtSecret });
 

@@ -2,7 +2,7 @@ import { type Handler } from 'aws-lambda';
 
 import { SendUsersMessagesAction } from '../../../application/actions/sendUsersMessages/sendUsersMessagesAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { SqsClientFactory } from '../../../common/sqsClient.js';
 import { ProcessorConfigFactory } from '../../../config/processorConfig.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
@@ -15,7 +15,7 @@ const sqsClient = SqsClientFactory.create();
 
 const config = ProcessorConfigFactory.create();
 
-const loggerClient = LoggerClientFactory.create({
+const loggerClient = LoggerServiceFactory.create({
   logLevel: config.logLevel,
 });
 

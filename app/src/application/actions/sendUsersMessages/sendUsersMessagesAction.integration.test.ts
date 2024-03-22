@@ -2,7 +2,7 @@ import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { SendUsersMessagesAction } from './sendUsersMessagesAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { SqsClientFactory } from '../../../common/sqsClient.js';
 import { ProcessorConfigFactory } from '../../../config/processorConfig.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
@@ -25,7 +25,7 @@ describe('SendUsersMessagesAction', () => {
 
     const config = ProcessorConfigFactory.create();
 
-    const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
+    const logger = LoggerServiceFactory.create({ logLevel: config.logLevel });
 
     sendUsersMessagesAction = new SendUsersMessagesAction(userRepository, sqsClient, logger, config);
 

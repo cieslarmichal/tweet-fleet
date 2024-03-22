@@ -2,7 +2,7 @@ import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { SendAggregatedTweetsMessagesAction } from './sendAggregatedTweetsMessagesAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { SqsClientFactory } from '../../../common/sqsClient.js';
 import { ProcessorConfigFactory } from '../../../config/processorConfig.js';
 import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
@@ -25,7 +25,7 @@ describe('SendAggregatedTweetsMessagesAction', () => {
 
     const config = ProcessorConfigFactory.create();
 
-    const logger = LoggerClientFactory.create({ logLevel: config.logLevel });
+    const logger = LoggerServiceFactory.create({ logLevel: config.logLevel });
 
     sendAggregatedTweetsMessagesAction = new SendAggregatedTweetsMessagesAction(
       subscriptionRepository,

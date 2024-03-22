@@ -3,7 +3,7 @@ import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { FindUserSubscriptionsAction } from './findUserSubscriptionsAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-import { LoggerClientFactory } from '../../../common/loggerClient.js';
+import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { SubscriptionTestUtils } from '../../../tests/utils/subscriptionTestUtils.js';
@@ -23,7 +23,7 @@ describe('FindUserSubscriptionsAction', () => {
 
     const userRepository = new UserRepository(dynamodbClient);
 
-    const logger = LoggerClientFactory.create({ logLevel: 'debug' });
+    const logger = LoggerServiceFactory.create({ logLevel: 'debug' });
 
     findUserSubscriptionsAction = new FindUserSubscriptionsAction(userRepository, subscriptionRepository, logger);
 

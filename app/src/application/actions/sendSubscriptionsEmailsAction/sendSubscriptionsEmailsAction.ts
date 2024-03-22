@@ -1,4 +1,4 @@
-// import { type LoggerClient } from '../../../common/loggerClient.js';
+// import { type LoggerService } from '../../../common/loggerClient.js';
 // import { type SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 // import { type UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 
@@ -6,7 +6,7 @@
 //   public constructor(
 //     private readonly userRepository: UserRepository,
 //     private readonly subscriptionRepository: SubscriptionRepository,
-//     private readonly logger: LoggerClient,
+//     private readonly logger: LoggerService,
 //   ) {}
 
 //   public async execute(): Promise<void> {

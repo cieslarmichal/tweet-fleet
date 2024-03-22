@@ -1,5 +1,5 @@
 import { ResourceAlreadyExistsError } from '../../../common/errors/resourceAlreadyExistsError.js';
-import { type LoggerClient } from '../../../common/loggerClient.js';
+import { type LoggerService } from '../../../common/loggerService.js';
 import { type SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 
 export interface CreateSubscriptionActionPayload {
@@ -10,7 +10,7 @@ export interface CreateSubscriptionActionPayload {
 export class CreateSubscriptionAction {
   public constructor(
     private readonly subscriptionRepository: SubscriptionRepository,
-    private readonly logger: LoggerClient,
+    private readonly logger: LoggerService,
   ) {}
 
   public async execute(payload: CreateSubscriptionActionPayload): Promise<void> {

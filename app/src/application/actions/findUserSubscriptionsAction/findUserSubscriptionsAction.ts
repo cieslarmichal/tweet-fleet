@@ -1,5 +1,5 @@
 import { OperationNotValidError } from '../../../common/errors/operationNotValidError.js';
-import { type LoggerClient } from '../../../common/loggerClient.js';
+import { type LoggerService } from '../../../common/loggerService.js';
 import { type Subscription } from '../../../domain/entities/subscription/subscription.js';
 import { type SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 import { type UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
@@ -16,7 +16,7 @@ export class FindUserSubscriptionsAction {
   public constructor(
     private readonly userRepository: UserRepository,
     private readonly subscriptionRepository: SubscriptionRepository,
-    private readonly logger: LoggerClient,
+    private readonly logger: LoggerService,
   ) {}
 
   public async execute(payload: FindUserSubscriptionsActionPayload): Promise<FindUserSubscriptionsActionResult> {

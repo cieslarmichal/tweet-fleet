@@ -1,5 +1,5 @@
 import { OperationNotValidError } from '../../../common/errors/operationNotValidError.js';
-import { type LoggerClient } from '../../../common/loggerClient.js';
+import { type LoggerService } from '../../../common/loggerService.js';
 import { type SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 
 export interface DeleteSubscriptionActionPayload {
@@ -9,7 +9,7 @@ export interface DeleteSubscriptionActionPayload {
 export class DeleteSubscriptionAction {
   public constructor(
     private readonly subscriptionRepository: SubscriptionRepository,
-    private readonly logger: LoggerClient,
+    private readonly logger: LoggerService,
   ) {}
 
   public async execute(payload: DeleteSubscriptionActionPayload): Promise<void> {
