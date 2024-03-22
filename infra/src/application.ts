@@ -39,6 +39,7 @@ const databaseStack = new DatabaseStack(app, 'DatabaseStack', { env });
 const cacheStack = new CacheStack(app, 'CacheStack', {
   env,
   vpc: vpcStack.vpc,
+  securityGroup: vpcStack.securityGroup,
 });
 
 new ApiStack(app, 'ApiStack', {
@@ -54,4 +55,6 @@ new ProcessorStack(app, 'ProcessorStack', {
   subscriptionsTable: databaseStack.subscriptionsTable,
   usersTable: databaseStack.usersTable,
   redis: cacheStack.redis,
+  securityGroup: vpcStack.securityGroup,
+  vpc: vpcStack.vpc,
 });

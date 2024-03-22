@@ -22,7 +22,7 @@ export class ProcessorStack extends core.Stack {
   public constructor(scope: core.App, id: string, props: ProcessorStackProps) {
     super(scope, id, props);
 
-    const { config, subscriptionsTable, usersTable, vpc, securityGroup } = props;
+    const { config, subscriptionsTable, usersTable, vpc, securityGroup, redis } = props;
 
     const usersQueue = new sqs.Queue(this, 'UsersQueue', {
       queueName: 'users',
@@ -38,6 +38,8 @@ export class ProcessorStack extends core.Stack {
       ['SENDGRID_API_KEY']: config.sendGridApiKey,
       ['USERS_SQS_URL']: config.sendGridApiKey,
       ['TWEETS_SQS_URL']: config.sendGridApiKey,
+      ['REDIS_HOST']: redis.attrRedisEndpointAddress,
+      ['REDIS_PORT']: redis.attrRedisEndpointPort,
     };
 
     const collectUsersLambda = new NodejsLambda(this, 'collectUsersLambda', {

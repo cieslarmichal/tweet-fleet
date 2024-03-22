@@ -9,6 +9,10 @@ const configSchema = Type.Object({
   }),
   usersSqsUrl: Type.String({ minLength: 1 }),
   tweetsSqsUrl: Type.String({ minLength: 1 }),
+  redis: Type.Object({
+    host: Type.String({ minLength: 1 }),
+    port: Type.Number({ minimum: 1 }),
+  }),
 });
 
 const configInput = {
@@ -19,6 +23,10 @@ const configInput = {
   },
   usersSqsUrl: process.env['USERS_SQS_URL'],
   tweetsSqsUrl: process.env['TWEETS_SQS_URL'],
+  redis: {
+    host: process.env['REDIS_HOST'],
+    port: process.env['REDIS_PORT'] ? parseInt(process.env['REDIS_PORT']) : 6379,
+  },
 };
 
 export type ProcessorConfig = Static<typeof configSchema>;
