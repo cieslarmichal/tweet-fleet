@@ -40,6 +40,10 @@ export class ProcessorStack extends core.Stack {
       ['TWEETS_SQS_URL']: config.sendGridApiKey,
       ['REDIS_HOST']: redis.attrRedisEndpointAddress,
       ['REDIS_PORT']: redis.attrRedisEndpointPort,
+      ['TWITTER_API_KEY']: config.twitter.apiKey,
+      ['TWITTER_API_SECRET']: config.twitter.apiSecret,
+      ['TWITTER_ACCESS_TOKEN']: config.twitter.accessToken,
+      ['TWITTER_ACCESS_TOKEN_SECRET']: config.twitter.accessTokenSecret,
     };
 
     const collectUsersLambda = new NodejsLambda(this, 'collectUsersLambda', {

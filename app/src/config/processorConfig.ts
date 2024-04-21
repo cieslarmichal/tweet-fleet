@@ -13,6 +13,12 @@ const configSchema = Type.Object({
     host: Type.String({ minLength: 1 }),
     port: Type.Number({ minimum: 1 }),
   }),
+  twitter: Type.Object({
+    apiKey: Type.String({ minLength: 1 }),
+    apiSecret: Type.String({ minLength: 1 }),
+    accessToken: Type.String({ minLength: 1 }),
+    accessTokenSecret: Type.String({ minLength: 1 }),
+  }),
 });
 
 const configInput = {
@@ -26,6 +32,12 @@ const configInput = {
   redis: {
     host: process.env['REDIS_HOST'],
     port: process.env['REDIS_PORT'] ? parseInt(process.env['REDIS_PORT']) : 6379,
+  },
+  twitter: {
+    apiKey: process.env['TWITTER_API_KEY'],
+    apiSecret: process.env['TWITTER_API_SECRET'],
+    accessToken: process.env['TWITTER_ACCESS_TOKEN'],
+    accessTokenSecret: process.env['TWITTER_ACCESS_TOKEN_SECRET'],
   },
 };
 

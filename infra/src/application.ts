@@ -15,7 +15,23 @@ const hashSaltRounds = process.env['HASH_SALT_ROUNDS'];
 
 const sendGridApiKey = process.env['SENDGRID_API_KEY'];
 
-if (!jwtSecret || !hashSaltRounds || !sendGridApiKey) {
+const twitterApiKey = process.env['TWITTER_API_KEY'];
+
+const twitterApiSecret = process.env['TWITTER_API_SECRET'];
+
+const twitterAccessToken = process.env['TWITTER_ACCESS_TOKEN'];
+
+const twitterAccessTokenSecret = process.env['TWITTER_ACCESS_TOKEN_SECRET'];
+
+if (
+  !jwtSecret ||
+  !hashSaltRounds ||
+  !sendGridApiKey ||
+  !twitterApiKey ||
+  !twitterApiSecret ||
+  !twitterAccessToken ||
+  !twitterAccessTokenSecret
+) {
   throw new Error('Missing environment variables');
 }
 
@@ -30,6 +46,12 @@ const config: Config = {
   jwtSecret,
   hashSaltRounds,
   sendGridApiKey,
+  twitter: {
+    apiKey: twitterApiKey,
+    apiSecret: twitterApiSecret,
+    accessToken: twitterAccessToken,
+    accessTokenSecret: twitterAccessTokenSecret,
+  },
 };
 
 const vpcStack = new VpcStack(app, 'VpcStack', { env });
