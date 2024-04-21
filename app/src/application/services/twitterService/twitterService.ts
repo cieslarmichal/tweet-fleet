@@ -3,35 +3,28 @@
 import { faker } from '@faker-js/faker';
 import { type StatusesUserTimeline, type TwitterClient } from 'twitter-api-client';
 
-import { type Tweet } from './tweet.js';
+import { type Tweet } from '../../../common/types/tweet.js';
+import { TweetTestFactory } from '../../../tests/factories/tweetTestFactory.js';
 
 export interface FetchTweetsFromLast24HoursPayload {
   readonly username: string;
 }
 
-export class TokenService {
+export class TwitterService {
   public constructor(private readonly twitterClient: TwitterClient) {}
 
   public async fetchFakeTweetsFromLast24Hours(payload: FetchTweetsFromLast24HoursPayload): Promise<Tweet[]> {
     const { username } = payload;
 
-    return Array.from({ length: 10 }, (): Tweet => {
-      const id = faker.string.uuid();
-
-      return {
-        id,
-        text: faker.lorem.sentence(),
-        createdAt: faker.date.past().toISOString(),
-        urls: [faker.internet.url()],
-        selfUrl: `https://twitter.com/${username}/status/${id}`,
-        author: {
-          id: faker.string.uuid(),
-          name: faker.person.fullName(),
-          username,
-          profileImageUrl: faker.image.avatar(),
-        },
-      };
-    });
+    return Array.from(
+      {
+        length: faker.number.int({
+          min: 1,
+          max: 10,
+        }),
+      },
+      (): Tweet => TweetTestFactory.create(username),
+    );
   }
 
   public async fetchTweetsFromLast24Hours(payload: FetchTweetsFromLast24HoursPayload): Promise<Tweet[]> {

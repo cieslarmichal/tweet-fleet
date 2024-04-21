@@ -17,3 +17,8 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './scripts/bootstrap-localstack.sh:/etc/localstack/init/ready.d/bootstrap-localstack.sh'
+
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'

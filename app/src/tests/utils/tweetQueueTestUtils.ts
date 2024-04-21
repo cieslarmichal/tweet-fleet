@@ -3,13 +3,14 @@
 import { PurgeQueueCommand, ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 
 import { type SqsClient } from '../../common/sqsClient.js';
+import { type Tweet } from '../../common/types/tweet.js';
 
 export interface TweetQueueMessage {
-  readonly id: string;
+  readonly tweets: Tweet[];
   readonly email: string;
 }
 
-export class UserQueueTestUtils {
+export class TweetQueueTestUtils {
   private readonly userQueueUrl = 'http://sqs.eu-central-1.localhost.localstack.cloud:4566/000000000000/tweets';
 
   public constructor(private readonly sqsClient: SqsClient) {}
@@ -27,7 +28,7 @@ export class UserQueueTestUtils {
       return [];
     }
 
-    return response.Messages.map((message) => JSON.parse(message.Body as string) as UserQueueMessage);
+    return response.Messages.map((message) => JSON.parse(message.Body as string) as TweetQueueMessage);
   }
 
   public async purge(): Promise<void> {
