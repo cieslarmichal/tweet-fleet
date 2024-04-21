@@ -53,15 +53,28 @@ describe('SendUsersMessagesAction', () => {
 
     const messages = await userQueueTestUtils.fetchMessages();
 
-    expect(messages).toEqual([
-      {
-        id: user1.id,
-        email: user1.email,
-      },
-      {
-        id: user2.id,
-        email: user2.email,
-      },
-    ]);
+    expect(messages).toHaveLength(2);
+
+    expect(
+      messages.some(
+        (message) =>
+          JSON.stringify(message) ===
+          JSON.stringify({
+            id: user1.id,
+            email: user1.email,
+          }),
+      ),
+    ).toBe(true);
+
+    expect(
+      messages.some(
+        (message) =>
+          JSON.stringify(message) ===
+          JSON.stringify({
+            id: user2.id,
+            email: user2.email,
+          }),
+      ),
+    ).toBe(true);
   });
 });

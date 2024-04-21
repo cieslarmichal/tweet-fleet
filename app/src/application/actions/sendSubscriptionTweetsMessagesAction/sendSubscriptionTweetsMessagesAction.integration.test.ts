@@ -72,7 +72,7 @@ describe('SendSubscriptionTweetsMessagesAction', () => {
     await tweetQueueTestUtils.purge();
   });
 
-  it('sends User messages', async () => {
+  it('sends User subscription tweets messages', async () => {
     const userId = faker.string.uuid();
 
     const email = faker.internet.email();
@@ -118,8 +118,12 @@ describe('SendSubscriptionTweetsMessagesAction', () => {
 
     expect(messages.every((message) => message.email === email)).toBe(true);
 
-    expect(messages.some((message) => message.tweets === subscription1Tweets)).toBe(true);
+    expect(messages.some((message) => JSON.stringify(message.tweets) === JSON.stringify(subscription1Tweets))).toBe(
+      true,
+    );
 
-    expect(messages.some((message) => message.tweets === subscription3Tweets)).toBe(true);
+    expect(messages.some((message) => JSON.stringify(message.tweets) === JSON.stringify(subscription3Tweets))).toBe(
+      true,
+    );
   });
 });
