@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { type Tweet } from '../../common/types/tweet.js';
 
 export class TweetTestFactory {
-  public static create(username: string): Tweet {
+  public static create(username: string, name?: string): Tweet {
     const id = faker.string.uuid();
 
     return {
@@ -14,7 +14,7 @@ export class TweetTestFactory {
       selfUrl: `https://twitter.com/${username}/status/${id}`,
       author: {
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        name: name || faker.person.fullName(),
         username,
         profileImageUrl: faker.image.avatar(),
       },

@@ -74,7 +74,29 @@ export class SendSubscriptionTweetsMessagesAction {
             count: tweets.length,
           });
 
-          await this.redisClient.set(twitterAccount, JSON.stringify(tweets));
+          if (tweets.length) {
+            const ttlInSeconds = 3600;
+
+            await this.redisClient.setex(twitterAccount, ttlInSeconds, JSON.stringify(tweets));
+
+            this.logger.debug({
+              message: 'Tweets saved to cache.',
+              userId,
+              twitterAccount,
+              count: tweets.length,
+            });
+          } else {
+            this.logger.debug({
+              message: 'Tweets not saved to cache.',
+              userId,
+              twitterAccount,
+              count: tweets.length,
+            });
+          }
+        }
+
+        if (!tweets.length) {
+          return;
         }
 
         const command = new SendMessageCommand({
@@ -87,12 +109,13 @@ export class SendSubscriptionTweetsMessagesAction {
 
         await this.sqsClient.send(command);
       }),
-    ),
-      this.logger.debug({
-        message: `User's subscription tweets messages sent.`,
-        userId,
-        email,
-        count: twitterSubscriptionAccounts.length,
-      });
+    );
+
+    this.logger.debug({
+      message: `User's subscription tweets messages sent.`,
+      userId,
+      email,
+      count: twitterSubscriptionAccounts.length,
+    });
   }
 }

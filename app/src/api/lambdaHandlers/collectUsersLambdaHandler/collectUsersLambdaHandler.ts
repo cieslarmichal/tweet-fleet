@@ -1,6 +1,6 @@
 import { type Handler } from 'aws-lambda';
 
-import { SendUsersMessagesAction } from '../../../application/actions/sendUsersMessages/sendUsersMessagesAction.js';
+import { SendUsersMessagesAction } from '../../../application/actions/sendUsersMessagesAction/sendUsersMessagesAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { SqsClientFactory } from '../../../common/sqsClient.js';
