@@ -1,5 +1,20 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { type Static, Type } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
+
+const {
+  LOG_LEVEL,
+  SENDGRID_API_KEY,
+  USERS_SQS_URL,
+  TWEETS_SQS_URL,
+  REDIS_HOST,
+  REDIS_PORT,
+  TWITTER_API_KEY,
+  TWITTER_ACCESS_TOKEN,
+  TWITTER_API_SECRET,
+  TWITTER_ACCESS_TOKEN_SECRET,
+} = process.env;
 
 const configSchema = Type.Object({
   logLevel: Type.String({ minLength: 1 }),
@@ -22,22 +37,22 @@ const configSchema = Type.Object({
 });
 
 const configInput = {
-  logLevel: process.env['LOG_LEVEL'] ?? 'debug',
+  logLevel: LOG_LEVEL ?? 'debug',
   sendGrid: {
-    apiKey: process.env['SENDGRID_API_KEY'],
+    apiKey: SENDGRID_API_KEY,
     senderEmail: 'michal.andrzej.cieslar@gmail.com',
   },
-  usersSqsUrl: process.env['USERS_SQS_URL'],
-  tweetsSqsUrl: process.env['TWEETS_SQS_URL'],
+  usersSqsUrl: USERS_SQS_URL,
+  tweetsSqsUrl: TWEETS_SQS_URL,
   redis: {
-    host: process.env['REDIS_HOST'],
-    port: process.env['REDIS_PORT'] ? parseInt(process.env['REDIS_PORT']) : 6379,
+    host: REDIS_HOST,
+    port: REDIS_PORT ? parseInt(REDIS_PORT) : 6379,
   },
   twitter: {
-    apiKey: process.env['TWITTER_API_KEY'],
-    apiSecret: process.env['TWITTER_API_SECRET'],
-    accessToken: process.env['TWITTER_ACCESS_TOKEN'],
-    accessTokenSecret: process.env['TWITTER_ACCESS_TOKEN_SECRET'],
+    apiKey: TWITTER_API_KEY,
+    apiSecret: TWITTER_API_SECRET,
+    accessToken: TWITTER_ACCESS_TOKEN,
+    accessTokenSecret: TWITTER_ACCESS_TOKEN_SECRET,
   },
 };
 

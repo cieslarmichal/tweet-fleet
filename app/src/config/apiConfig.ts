@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { type Static, Type } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
+
+const { LOG_LEVEL, HASH_SALT_ROUNDS, JWT_SECRET, JWT_EXPIRATION } = process.env;
 
 const configSchema = Type.Object({
   logLevel: Type.String({ minLength: 1 }),
@@ -9,10 +13,10 @@ const configSchema = Type.Object({
 });
 
 const configInput = {
-  logLevel: process.env['LOG_LEVEL'] ?? 'debug',
-  hashSaltRounds: parseInt(process.env['HASH_SALT_ROUNDS'] as string),
-  jwtSecret: process.env['JWT_SECRET'],
-  jwtExpiration: process.env['JWT_EXPIRATION'] ? parseInt(process.env['JWT_EXPIRATION'] as string) : 86400,
+  logLevel: LOG_LEVEL ?? 'debug',
+  hashSaltRounds: parseInt(HASH_SALT_ROUNDS as string),
+  jwtSecret: JWT_SECRET,
+  jwtExpiration: JWT_EXPIRATION ? parseInt(JWT_EXPIRATION) : 86400,
 };
 
 export type ApiConfig = Static<typeof configSchema>;
