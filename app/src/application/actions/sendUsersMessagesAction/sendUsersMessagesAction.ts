@@ -22,11 +22,15 @@ export class SendUsersMessagesAction {
 
     let startKey: Record<string, unknown> | undefined = undefined;
 
+    let usersCount = 0;
+
     do {
       const { users, lastEvaluatedKey } = await this.userRepository.findAllUsers({
         limit: 10,
         startKey,
       });
+
+      usersCount += users.length;
 
       await Promise.all(
         users.map(async (user) => {
@@ -45,6 +49,17 @@ export class SendUsersMessagesAction {
       startKey = lastEvaluatedKey;
     } while (startKey);
 
-    this.logger.debug({ message: 'Users messages sent.' });
+    if (usersCount === 0) {
+      this.logger.debug({
+        message: 'No users to send messages to.',
+      });
+
+      return;
+    }
+
+    this.logger.debug({
+      message: 'Users messages sent.',
+      usersCount,
+    });
   }
 }
