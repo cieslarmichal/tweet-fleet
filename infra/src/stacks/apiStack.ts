@@ -32,21 +32,21 @@ export class ApiStack extends core.Stack {
       ['HASH_SALT_ROUNDS']: config.hashSaltRounds,
     };
 
-    const registerUserLambda = new NodejsLambda(this, 'registerUserLambda', {
+    const registerUserLambda = new NodejsLambda(this, 'RegisterUserLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/registerUserLambdaHandler/registerUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
     });
 
     usersTable.grantReadWriteData(registerUserLambda);
 
-    const loginUserLambda = new NodejsLambda(this, 'loginUserLambda', {
+    const loginUserLambda = new NodejsLambda(this, 'LoginUserLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/loginUserLambdaHandler/loginUserLambdaHandler.ts`,
       environment: lambdaEnvironment,
     });
 
     usersTable.grantReadWriteData(loginUserLambda);
 
-    const createSubscriptionLambda = new NodejsLambda(this, 'createSubscriptionLambda', {
+    const createSubscriptionLambda = new NodejsLambda(this, 'CreateSubscriptionLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/createSubscriptionLambdaHandler/createSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
     });
@@ -55,7 +55,7 @@ export class ApiStack extends core.Stack {
 
     subscriptionsTable.grantReadWriteData(createSubscriptionLambda);
 
-    const deleteSubscriptionLambda = new NodejsLambda(this, 'deleteSubscriptionLambda', {
+    const deleteSubscriptionLambda = new NodejsLambda(this, 'DeleteSubscriptionLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/deleteSubscriptionLambdaHandler/deleteSubscriptionLambdaHandler.ts`,
       environment: lambdaEnvironment,
     });
@@ -64,7 +64,7 @@ export class ApiStack extends core.Stack {
 
     subscriptionsTable.grantReadWriteData(deleteSubscriptionLambda);
 
-    const getSubscriptionsLambda = new NodejsLambda(this, 'getSubscriptionsLambda', {
+    const getSubscriptionsLambda = new NodejsLambda(this, 'GetSubscriptionsLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/getSubscriptionsLambdaHandler/getSubscriptionsLambdaHandler.ts`,
       environment: lambdaEnvironment,
     });

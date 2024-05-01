@@ -48,7 +48,7 @@ export class ProcessorStack extends core.Stack {
       ['HASH_SALT_ROUNDS']: config.hashSaltRounds,
     };
 
-    const collectUsersLambda = new NodejsLambda(this, 'collectUsersLambda', {
+    const collectUsersLambda = new NodejsLambda(this, 'CollectUsersLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/collectUsersLambdaHandler/collectUsersLambdaHandler.ts`,
       environment: lambdaEnvironment,
     });
@@ -64,7 +64,7 @@ export class ProcessorStack extends core.Stack {
 
     usersQueue.grantSendMessages(collectUsersLambda);
 
-    const collectTweetsLambda = new NodejsLambda(this, 'collectTweetsLambda', {
+    const collectTweetsLambda = new NodejsLambda(this, 'CollectTweetsLambda', {
       entry: `${process.cwd()}/../app/src/api/lambdaHandlers/collectTweetsLambdaHandler/collectTweetsLambdaHandler.ts`,
       environment: lambdaEnvironment,
       vpc: vpc as ec2.IVpc,
@@ -82,12 +82,12 @@ export class ProcessorStack extends core.Stack {
       }),
     );
 
-    const sendAggregatedTweetsLambda = new NodejsLambda(this, 'sendAggregatedTweetsLambda', {
-      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/sendAggregatedTweetsLambdaHandler/sendAggregatedTweetsLambdaHandler.ts`,
+    const sendAggregatedTweetsEmailLambda = new NodejsLambda(this, 'SendAggregatedTweetsEmailLambda', {
+      entry: `${process.cwd()}/../app/src/api/lambdaHandlers/sendEmailsLambdaHandler/sendEmailsLambdaHandler.ts`,
       environment: lambdaEnvironment,
     });
 
-    sendAggregatedTweetsLambda.addEventSource(
+    sendAggregatedTweetsEmailLambda.addEventSource(
       new SqsEventSource(tweetsQueue, {
         batchSize: 1,
       }),
