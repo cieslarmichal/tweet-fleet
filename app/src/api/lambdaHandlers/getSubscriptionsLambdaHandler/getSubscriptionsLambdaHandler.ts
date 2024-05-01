@@ -1,29 +1,40 @@
+import { Type } from '@sinclair/typebox';
 import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda';
 
-// const databaseName = process.env[EnvKey.databaseName] as string;
-// const host = process.env[EnvKey.databaseHost] as string;
-// const user = process.env[EnvKey.databaseUser] as string;
-// const databasePassword = process.env[EnvKey.databasePassword] as string;
-// const jwtSecret = process.env[EnvKey.jwtSecret] as string;
-// const jwtExpiresIn = parseInt(process.env[EnvKey.jwtExpiresIn] as string);
+import { DeleteSubscriptionAction } from '../../../application/actions/deleteSubscriptionAction/deleteSubscriptionAction.js';
+import { TokenService } from '../../../application/services/tokenService/tokenService.js';
+import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+import { LoggerServiceFactory } from '../../../common/loggerService.js';
+import { ConfigFactory } from '../../../config/config.js';
+import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
+import { AccessControlService } from '../../services/accessControlService/accessControlService.js';
 
-// const databaseQueryBuilder = new QueryBuilderFactoryImpl().create({
-//   databaseName,
-//   host,
-//   password: databasePassword,
-//   user,
-// });
+const dynamoDbClient = DynamoDbClientFactory.create();
 
-// const messageMapper = new MessageMapperImpl();
-// const messageRepositoryImpl = new MessageRepositoryImpl(databaseQueryBuilder, messageMapper);
-// const findMessagesQueryImpl = new FindMessagesQueryImpl(messageRepositoryImpl);
-// const tokenService = new TokenServiceImpl(jwtSecret, jwtExpiresIn);
-// const verifyAccessTokenQuery = new VerifyAccessTokenQueryImpl(tokenService);
+const subscriptionRepository = new SubscriptionRepository(dynamoDbClient);
+
+const config = ConfigFactory.create();
+
+const logger = LoggerServiceFactory.create({
+  logLevel: config.logLevel,
+});
+
+const tokenService = new TokenService({ jwtSecret: config.jwtSecret });
+
+const accessControlService = new AccessControlService(tokenService);
+
+const action = new DeleteSubscriptionAction(subscriptionRepository, logger);
+
+const pathParamsSchema = Type.Object({
+  id: Type.String(),
+});
 
 export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResult> => {
   const authorizationHeader = event.headers['Authorization'];
 
-  console.log({ authorizationHeader });
+  const { userId } = await accessControlService.verifyBearerToken({ authorizationHeader });
+
+  await action.execute({ id });
 
   // const { userId } = await verifyAccessTokenQuery.verifyAccessToken({ accessToken: accessToken as string });
 
