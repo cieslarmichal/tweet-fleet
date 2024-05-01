@@ -51,7 +51,7 @@ export class SendUsersMessagesAction {
 
     if (usersCount === 0) {
       this.logger.debug({
-        message: 'No users to send messages to.',
+        message: 'No users found.',
       });
 
       return;
