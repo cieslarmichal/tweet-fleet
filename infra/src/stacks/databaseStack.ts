@@ -27,6 +27,10 @@ export class DatabaseStack extends core.Stack {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
       },
+      sortKey: {
+        name: 'userId',
+        type: dynamodb.AttributeType.STRING,
+      },
       tableName: 'subscriptions',
       removalPolicy: core.RemovalPolicy.DESTROY,
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
