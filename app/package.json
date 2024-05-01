@@ -1,6 +1,5 @@
 {
   "name": "@tweet-fleet/app",
-  "private": true,
   "type": "module",
   "scripts": {
     "build": "tsc --build tsconfig.json",
@@ -12,24 +11,24 @@
     "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.515.0",
-    "@aws-sdk/client-sqs": "^3.529.1",
-    "@aws-sdk/lib-dynamodb": "^3.515.0",
-    "@sinclair/typebox": "^0.32.14",
+    "@aws-sdk/client-dynamodb": "^3.565.0",
+    "@aws-sdk/client-sqs": "^3.565.0",
+    "@aws-sdk/lib-dynamodb": "^3.565.0",
+    "@sinclair/typebox": "^0.32.27",
     "bcrypt": "^5.1.1",
     "http-status-codes": "^2.3.0",
-    "ioredis": "^5.3.2",
+    "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "3.3.2",
-    "pino": "^8.19.0",
+    "pino": "^9.0.0",
     "twitter-api-client": "^1.6.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.3.1",
+    "@faker-js/faker": "^8.4.1",
     "@types/bcrypt": "^5.0.2",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/node": "^20.11.19",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.12.7",
     "@types/uuid": "^9.0.8"
   },
   "volta": {
