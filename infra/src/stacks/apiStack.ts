@@ -1,5 +1,6 @@
 import * as core from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import type * as elasticache from 'aws-cdk-lib/aws-elasticache';
 
 import { NodejsLambda } from './common/nodejsLambda.js';
 import { type Config } from '../config.js';
@@ -8,15 +9,25 @@ export interface ApiStackProps extends core.StackProps {
   readonly config: Config;
   readonly usersTable: core.aws_dynamodb.Table;
   readonly subscriptionsTable: core.aws_dynamodb.Table;
+  readonly redis: elasticache.CfnCacheCluster;
 }
 
 export class ApiStack extends core.Stack {
   public constructor(scope: core.App, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
-    const { config, usersTable, subscriptionsTable } = props;
+    const { config, usersTable, subscriptionsTable, redis } = props;
 
     const lambdaEnvironment = {
+      ['SENDGRID_API_KEY']: config.sendGridApiKey,
+      ['USERS_SQS_URL']: config.sendGridApiKey,
+      ['TWEETS_SQS_URL']: config.sendGridApiKey,
+      ['REDIS_HOST']: redis.attrRedisEndpointAddress,
+      ['REDIS_PORT']: redis.attrRedisEndpointPort,
+      ['TWITTER_API_KEY']: config.twitter.apiKey,
+      ['TWITTER_API_SECRET']: config.twitter.apiSecret,
+      ['TWITTER_ACCESS_TOKEN']: config.twitter.accessToken,
+      ['TWITTER_ACCESS_TOKEN_SECRET']: config.twitter.accessTokenSecret,
       ['JWT_SECRET']: config.jwtSecret,
       ['HASH_SALT_ROUNDS']: config.hashSaltRounds,
     };

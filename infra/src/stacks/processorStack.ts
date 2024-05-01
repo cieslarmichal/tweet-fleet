@@ -44,6 +44,8 @@ export class ProcessorStack extends core.Stack {
       ['TWITTER_API_SECRET']: config.twitter.apiSecret,
       ['TWITTER_ACCESS_TOKEN']: config.twitter.accessToken,
       ['TWITTER_ACCESS_TOKEN_SECRET']: config.twitter.accessTokenSecret,
+      ['JWT_SECRET']: config.jwtSecret,
+      ['HASH_SALT_ROUNDS']: config.hashSaltRounds,
     };
 
     const collectUsersLambda = new NodejsLambda(this, 'collectUsersLambda', {
@@ -52,7 +54,8 @@ export class ProcessorStack extends core.Stack {
     });
 
     const eventRule = new events.Rule(this, 'scheduleRule', {
-      schedule: events.Schedule.cron({ minute: '0 22 * * ? *' }),
+      // schedule: events.Schedule.cron({ minute: '0 22 * * ? *' }),
+      schedule: events.Schedule.cron({ minute: '*/5 * * * ? *' }),
     });
 
     eventRule.addTarget(new targets.LambdaFunction(collectUsersLambda));

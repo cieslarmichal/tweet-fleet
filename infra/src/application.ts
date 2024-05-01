@@ -11,8 +11,6 @@ import { VpcStack } from './stacks/vpcStack.js';
 
 const jwtSecret = process.env['JWT_SECRET'];
 
-const hashSaltRounds = process.env['HASH_SALT_ROUNDS'];
-
 const sendGridApiKey = process.env['SENDGRID_API_KEY'];
 
 const twitterApiKey = process.env['TWITTER_API_KEY'];
@@ -25,7 +23,6 @@ const twitterAccessTokenSecret = process.env['TWITTER_ACCESS_TOKEN_SECRET'];
 
 if (
   !jwtSecret ||
-  !hashSaltRounds ||
   !sendGridApiKey ||
   !twitterApiKey ||
   !twitterApiSecret ||
@@ -44,7 +41,7 @@ const env = {
 
 const config: Config = {
   jwtSecret,
-  hashSaltRounds,
+  hashSaltRounds: '10',
   sendGridApiKey,
   twitter: {
     apiKey: twitterApiKey,
@@ -69,6 +66,7 @@ new ApiStack(app, 'ApiStack', {
   config,
   subscriptionsTable: databaseStack.subscriptionsTable,
   usersTable: databaseStack.usersTable,
+  redis: cacheStack.redis,
 });
 
 new ProcessorStack(app, 'ProcessorStack', {
