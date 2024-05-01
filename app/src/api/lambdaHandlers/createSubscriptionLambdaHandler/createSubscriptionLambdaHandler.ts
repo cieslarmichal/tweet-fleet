@@ -29,7 +29,6 @@ const accessControlService = new AccessControlService(tokenService);
 const action = new CreateSubscriptionAction(subscriptionRepository, logger);
 
 const bodySchema = Type.Object({
-  userId: Type.String(),
   twitterUsername: Type.String(),
 });
 
@@ -37,11 +36,11 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
   try {
     const authorizationHeader = event.headers['Authorization'];
 
-    await accessControlService.verifyBearerToken({ authorizationHeader });
+    const { userId } = await accessControlService.verifyBearerToken({ authorizationHeader });
 
     const body = JSON.parse(event.body as string);
 
-    const { userId, twitterUsername } = Value.Decode(bodySchema, body);
+    const { twitterUsername } = Value.Decode(bodySchema, body);
 
     await action.execute({
       userId,
