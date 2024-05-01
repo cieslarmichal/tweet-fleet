@@ -61,8 +61,9 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
       return {
         statusCode: 422,
         body: JSON.stringify({
-          message: 'Operation Not Valid',
-          reason: error.message,
+          name: error.name,
+          message: error.message,
+          context: error.context,
         }),
       };
     }
@@ -71,8 +72,8 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
       return {
         statusCode: 400,
         body: JSON.stringify({
-          message: 'Bad Request',
-          reason: error.message,
+          name: error.name,
+          message: error.message,
         }),
       };
     }

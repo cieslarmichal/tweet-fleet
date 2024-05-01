@@ -63,8 +63,9 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
       return {
         statusCode: 409,
         body: JSON.stringify({
-          message: 'Conflict',
-          reason: error.message,
+          name: error.name,
+          message: error.message,
+          context: error.context,
         }),
       };
     }
@@ -73,8 +74,9 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
       return {
         statusCode: 401,
         body: JSON.stringify({
-          message: 'Unauthorized',
-          reason: error.message,
+          name: error.name,
+          message: error.message,
+          context: error.context,
         }),
       };
     }
