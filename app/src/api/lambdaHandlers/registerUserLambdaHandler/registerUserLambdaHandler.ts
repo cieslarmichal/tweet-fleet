@@ -5,6 +5,7 @@ import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda
 import { RegisterUserAction } from '../../../application/actions/registerUserAction/registerUserAction.js';
 import { HashService } from '../../../application/services/hashService/hashService.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+import { ResourceAlreadyExistsError } from '../../../common/errors/resourceAlreadyExistsError.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { ConfigFactory } from '../../../config/config.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
@@ -49,6 +50,16 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
       error,
       event,
     });
+
+    if (error instanceof ResourceAlreadyExistsError) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({
+          message: 'Conflict',
+          reason: error.message,
+        }),
+      };
+    }
 
     if (error instanceof TransformDecodeCheckError) {
       return {

@@ -3,6 +3,7 @@ import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda
 import { FindUserSubscriptionsAction } from '../../../application/actions/findUserSubscriptionsAction/findUserSubscriptionsAction.js';
 import { TokenService } from '../../../application/services/tokenService/tokenService.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+import { OperationNotValidError } from '../../../common/errors/operationNotValidError.js';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { ConfigFactory } from '../../../config/config.js';
@@ -46,6 +47,16 @@ export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResu
       error,
       event,
     });
+
+    if (error instanceof OperationNotValidError) {
+      return {
+        statusCode: 422,
+        body: JSON.stringify({
+          message: 'Operation Not Valid',
+          reason: error.message,
+        }),
+      };
+    }
 
     if (error instanceof UnauthorizedAccessError) {
       return {

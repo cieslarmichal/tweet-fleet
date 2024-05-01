@@ -1,4 +1,4 @@
-import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
+import { OperationNotValidError } from '../../../common/errors/operationNotValidError.js';
 import { type LoggerService } from '../../../common/loggerService.js';
 import { type Config } from '../../../config/config.js';
 import { type UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
@@ -35,7 +35,7 @@ export class LoginUserAction {
     const user = await this.userRepository.findUserByEmail({ email });
 
     if (!user) {
-      throw new UnauthorizedAccessError({
+      throw new OperationNotValidError({
         reason: 'User not found.',
         email,
       });
@@ -47,7 +47,7 @@ export class LoginUserAction {
     });
 
     if (!passwordIsValid) {
-      throw new UnauthorizedAccessError({
+      throw new OperationNotValidError({
         reason: 'User not found.',
         email,
       });
