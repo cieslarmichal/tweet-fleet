@@ -11,13 +11,13 @@ export interface TweetQueueMessage {
 }
 
 export class TweetQueueTestUtils {
-  private readonly userQueueUrl = 'http://sqs.eu-central-1.localhost.localstack.cloud:4566/000000000000/tweets';
+  private readonly tweetQueueUrl = 'http://sqs.eu-central-1.localhost.localstack.cloud:4566/000000000000/tweets';
 
   public constructor(private readonly sqsClient: SqsClient) {}
 
   public async fetchMessages(): Promise<TweetQueueMessage[]> {
     const command = new ReceiveMessageCommand({
-      QueueUrl: this.userQueueUrl,
+      QueueUrl: this.tweetQueueUrl,
       MaxNumberOfMessages: 10,
       WaitTimeSeconds: 1,
     });
@@ -32,6 +32,6 @@ export class TweetQueueTestUtils {
   }
 
   public async purge(): Promise<void> {
-    await this.sqsClient.send(new PurgeQueueCommand({ QueueUrl: this.userQueueUrl }));
+    await this.sqsClient.send(new PurgeQueueCommand({ QueueUrl: this.tweetQueueUrl }));
   }
 }
