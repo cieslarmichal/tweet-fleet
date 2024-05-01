@@ -6,7 +6,7 @@ import { type LoggerService } from '../../../common/loggerService.js';
 import { type RedisClient } from '../../../common/redisClient.js';
 import { type SqsClient } from '../../../common/sqsClient.js';
 import { type Tweet } from '../../../common/types/tweet.js';
-import { type ProcessorConfig } from '../../../config/processorConfig.js';
+import { type Config } from '../../../config/config.js';
 import { type SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 import { type TwitterService } from '../../services/twitterService/twitterService.js';
 
@@ -22,7 +22,7 @@ export class SendSubscriptionTweetsMessagesAction {
     private readonly redisClient: RedisClient,
     private readonly twitterService: TwitterService,
     private readonly logger: LoggerService,
-    private readonly config: ProcessorConfig,
+    private readonly config: Config,
   ) {}
 
   public async execute(payload: SendSubscriptionTweetsMessagesActionPayload): Promise<void> {

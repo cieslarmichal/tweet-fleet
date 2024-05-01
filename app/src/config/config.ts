@@ -14,6 +14,8 @@ const {
   TWITTER_ACCESS_TOKEN,
   TWITTER_API_SECRET,
   TWITTER_ACCESS_TOKEN_SECRET,
+  HASH_SALT_ROUNDS,
+  JWT_SECRET,
 } = process.env;
 
 const configSchema = Type.Object({
@@ -34,6 +36,9 @@ const configSchema = Type.Object({
     accessToken: Type.String({ minLength: 1 }),
     accessTokenSecret: Type.String({ minLength: 1 }),
   }),
+  hashSaltRounds: Type.Integer(),
+  jwtSecret: Type.String({ minLength: 1 }),
+  jwtExpiration: Type.Integer(),
 });
 
 const configInput = {
@@ -54,12 +59,15 @@ const configInput = {
     accessToken: TWITTER_ACCESS_TOKEN,
     accessTokenSecret: TWITTER_ACCESS_TOKEN_SECRET,
   },
+  hashSaltRounds: parseInt(HASH_SALT_ROUNDS as string),
+  jwtSecret: JWT_SECRET,
+  jwtExpiration: 86400,
 };
 
-export type ProcessorConfig = Static<typeof configSchema>;
+export type Config = Static<typeof configSchema>;
 
-export class ProcessorConfigFactory {
-  public static create(): ProcessorConfig {
+export class ConfigFactory {
+  public static create(): Config {
     return Value.Decode(configSchema, configInput);
   }
 }

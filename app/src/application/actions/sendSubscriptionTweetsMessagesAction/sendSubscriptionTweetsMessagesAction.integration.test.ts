@@ -7,7 +7,7 @@ import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { type RedisClient, RedisClientFactory } from '../../../common/redisClient.js';
 import { SqsClientFactory } from '../../../common/sqsClient.js';
 import { TwitterClientFactory } from '../../../common/twitterClient.js';
-import { ProcessorConfigFactory } from '../../../config/processorConfig.js';
+import { ConfigFactory } from '../../../config/config.js';
 import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
 import { TweetTestFactory } from '../../../tests/factories/tweetTestFactory.js';
 import { SubscriptionTestUtils } from '../../../tests/utils/subscriptionTestUtils.js';
@@ -30,7 +30,7 @@ describe('SendSubscriptionTweetsMessagesAction', () => {
 
     const subscriptionRepository = new SubscriptionRepository(dynamodbClient);
 
-    const config = ProcessorConfigFactory.create();
+    const config = ConfigFactory.create();
 
     const logger = LoggerServiceFactory.create({ logLevel: config.logLevel });
 

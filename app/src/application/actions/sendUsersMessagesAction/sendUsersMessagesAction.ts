@@ -4,7 +4,7 @@ import { SendMessageCommand } from '@aws-sdk/client-sqs';
 
 import { type LoggerService } from '../../../common/loggerService.js';
 import { type SqsClient } from '../../../common/sqsClient.js';
-import { type ProcessorConfig } from '../../../config/processorConfig.js';
+import { type Config } from '../../../config/config.js';
 import { type UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 
 export class SendUsersMessagesAction {
@@ -12,7 +12,7 @@ export class SendUsersMessagesAction {
     private readonly userRepository: UserRepository,
     private readonly sqsClient: SqsClient,
     private readonly logger: LoggerService,
-    private readonly config: ProcessorConfig,
+    private readonly config: Config,
   ) {}
 
   public async execute(): Promise<void> {
