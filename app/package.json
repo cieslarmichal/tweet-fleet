@@ -3,9 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:clean": "rimraf dist",
-    "build": "tsc --build tsconfig.prod.json",
-    "build:dev": "tsc --build tsconfig.json",
+    "build": "tsc --build tsconfig.json",
     "test:unit": "dotenv -e .env.test -- vitest .unit.test.ts --config vitest.unit.config.js",
     "test:unit:run": "npm run test:unit -- --run",
     "test:integration": "dotenv -e .env.test -- vitest --config vitest.integration.config.js .integration.test.ts",
