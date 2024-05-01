@@ -1,10 +1,11 @@
 import { Type } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
+import { Value, TransformDecodeCheckError } from '@sinclair/typebox/value';
 import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda';
 
 import { DeleteSubscriptionAction } from '../../../application/actions/deleteSubscriptionAction/deleteSubscriptionAction.js';
 import { TokenService } from '../../../application/services/tokenService/tokenService.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { ConfigFactory } from '../../../config/config.js';
 import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
@@ -31,16 +32,51 @@ const pathParamsSchema = Type.Object({
 });
 
 export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResult> => {
-  const authorizationHeader = event.headers['Authorization'];
+  try {
+    const authorizationHeader = event.headers['Authorization'];
 
-  await accessControlService.verifyBearerToken({ authorizationHeader });
+    await accessControlService.verifyBearerToken({ authorizationHeader });
 
-  const { id } = Value.Decode(pathParamsSchema, event.pathParameters);
+    const { id } = Value.Decode(pathParamsSchema, event.pathParameters);
 
-  await action.execute({ id });
+    await action.execute({ id });
 
-  return {
-    statusCode: 204,
-    body: '',
-  };
+    return {
+      statusCode: 204,
+      body: '',
+    };
+  } catch (error) {
+    logger.error({
+      message: 'Error while processing event.',
+      error,
+      event,
+    });
+
+    if (error instanceof TransformDecodeCheckError) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: 'Bad Request',
+          reason: error.message,
+        }),
+      };
+    }
+
+    if (error instanceof UnauthorizedAccessError) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({
+          message: 'Unauthorized',
+          reason: error.message,
+        }),
+      };
+    }
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Internal Server Error',
+      }),
+    };
+  }
 };

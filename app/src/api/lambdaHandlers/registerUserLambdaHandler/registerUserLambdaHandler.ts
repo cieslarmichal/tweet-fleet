@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
+import { Value, TransformDecodeCheckError } from '@sinclair/typebox/value';
 import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda';
 
 import { RegisterUserAction } from '../../../application/actions/registerUserAction/registerUserAction.js';
@@ -29,17 +29,42 @@ const bodySchema = Type.Object({
 });
 
 export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResult> => {
-  const body = JSON.parse(event.body as string);
+  try {
+    const body = JSON.parse(event.body as string);
 
-  const { email, password } = Value.Decode(bodySchema, body);
+    const { email, password } = Value.Decode(bodySchema, body);
 
-  await action.execute({
-    email,
-    password,
-  });
+    await action.execute({
+      email,
+      password,
+    });
 
-  return {
-    statusCode: 200,
-    body: '',
-  };
+    return {
+      statusCode: 200,
+      body: '',
+    };
+  } catch (error) {
+    logger.error({
+      message: 'Error while processing event.',
+      error,
+      event,
+    });
+
+    if (error instanceof TransformDecodeCheckError) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: 'Bad Request',
+          reason: error.message,
+        }),
+      };
+    }
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Internal Server Error',
+      }),
+    };
+  }
 };

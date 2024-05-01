@@ -5,6 +5,7 @@ import { type APIGatewayEvent, type Handler, type ProxyResult } from 'aws-lambda
 import { CreateSubscriptionAction } from '../../../application/actions/createSubscriptionAction/createSubscriptionAction.js';
 import { TokenService } from '../../../application/services/tokenService/tokenService.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
+import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { ConfigFactory } from '../../../config/config.js';
 import { SubscriptionRepository } from '../../../domain/repositories/subscriptionRepository/subscriptionRepository.js';
@@ -32,21 +33,46 @@ const bodySchema = Type.Object({
 });
 
 export const lambda: Handler = async (event: APIGatewayEvent): Promise<ProxyResult> => {
-  const authorizationHeader = event.headers['Authorization'];
+  try {
+    const authorizationHeader = event.headers['Authorization'];
 
-  await accessControlService.verifyBearerToken({ authorizationHeader });
+    await accessControlService.verifyBearerToken({ authorizationHeader });
 
-  const body = JSON.parse(event.body as string);
+    const body = JSON.parse(event.body as string);
 
-  const { userId, twitterUsername } = Value.Decode(bodySchema, body);
+    const { userId, twitterUsername } = Value.Decode(bodySchema, body);
 
-  await action.execute({
-    userId,
-    twitterUsername,
-  });
+    await action.execute({
+      userId,
+      twitterUsername,
+    });
 
-  return {
-    statusCode: 201,
-    body: '',
-  };
+    return {
+      statusCode: 201,
+      body: '',
+    };
+  } catch (error) {
+    logger.error({
+      message: 'Error while processing event.',
+      error,
+      event,
+    });
+
+    if (error instanceof UnauthorizedAccessError) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({
+          message: 'Unauthorized',
+          reason: error.message,
+        }),
+      };
+    }
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Internal Server Error',
+      }),
+    };
+  }
 };
