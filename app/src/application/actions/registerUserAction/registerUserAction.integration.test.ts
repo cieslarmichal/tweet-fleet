@@ -3,7 +3,7 @@ import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 import { RegisterUserAction } from './registerUserAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
-import { ApiConfigFactory } from '../../../config/apiConfig.js';
+import { ConfigFactory } from '../../../config/config.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
 import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
@@ -21,7 +21,7 @@ describe('RegisterUserAction', () => {
 
     const userRepository = new UserRepository(dynamodbClient);
 
-    const config = ApiConfigFactory.create();
+    const config = ConfigFactory.create();
 
     hashService = new HashService({ hashSaltRounds: config.hashSaltRounds });
 

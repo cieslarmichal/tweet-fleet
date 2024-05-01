@@ -4,7 +4,7 @@ import { LoginUserAction } from './loginUserAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
 import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
-import { type ApiConfig, ApiConfigFactory } from '../../../config/apiConfig.js';
+import { type Config, ConfigFactory } from '../../../config/config.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
 import { UserTestFactory } from '../../../tests/factories/userTestFactory.js';
 import { UserTestUtils } from '../../../tests/utils/userTestUtils.js';
@@ -20,14 +20,14 @@ describe('LoginUserAction', () => {
 
   let tokenService: TokenService;
 
-  let config: ApiConfig;
+  let config: Config;
 
   beforeEach(async () => {
     const dynamodbClient = DynamoDbClientFactory.create({ endpoint: 'http://127.0.0.1:4566' });
 
     const userRepository = new UserRepository(dynamodbClient);
 
-    config = ApiConfigFactory.create();
+    config = ConfigFactory.create();
 
     hashService = new HashService({ hashSaltRounds: config.hashSaltRounds });
 
@@ -35,7 +35,7 @@ describe('LoginUserAction', () => {
 
     tokenService = new TokenService({ jwtSecret: config.jwtSecret });
 
-    loginUserAction = new LoginUserAction(userRepository, logger, hashService, tokenService, config);
+    loginUserAction = new LoginUserAction(userRepository, hashService, tokenService, logger, config);
 
     userTestUtils = new UserTestUtils(dynamodbClient);
 
