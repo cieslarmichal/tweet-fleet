@@ -26,12 +26,12 @@ export class ProcessorStack extends core.Stack {
 
     const usersQueue = new sqs.Queue(this, 'UsersQueue', {
       queueName: 'users',
-      visibilityTimeout: core.Duration.seconds(30),
+      visibilityTimeout: core.Duration.seconds(300),
     });
 
     const tweetsQueue = new sqs.Queue(this, 'TweetsQueue', {
       queueName: 'tweets',
-      visibilityTimeout: core.Duration.seconds(30),
+      visibilityTimeout: core.Duration.seconds(300),
     });
 
     const lambdaEnvironment = {
@@ -54,8 +54,11 @@ export class ProcessorStack extends core.Stack {
     });
 
     const eventRule = new events.Rule(this, 'scheduleRule', {
-      // schedule: events.Schedule.cron({ minute: '0 22 * * ? *' }),
-      schedule: events.Schedule.cron({ minute: '*/5 * * * ? *' }),
+      // schedule: events.Schedule.cron({
+      //   hour: '22',
+      //   minute: '0',
+      // }),
+      schedule: events.Schedule.cron({ minute: '0/5' }),
     });
 
     eventRule.addTarget(new targets.LambdaFunction(collectUsersLambda));
