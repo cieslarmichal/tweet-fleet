@@ -13,10 +13,6 @@ export class DatabaseStack extends core.Stack {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
       },
-      sortKey: {
-        name: 'email',
-        type: dynamodb.AttributeType.STRING,
-      },
       tableName: 'users',
       removalPolicy: core.RemovalPolicy.DESTROY,
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -25,10 +21,6 @@ export class DatabaseStack extends core.Stack {
     this.subscriptionsTable = new dynamodb.Table(this, 'SubscriptionsTable', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'userId',
         type: dynamodb.AttributeType.STRING,
       },
       tableName: 'subscriptions',
