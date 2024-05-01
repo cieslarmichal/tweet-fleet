@@ -41,14 +41,24 @@ const action = new SendSubscriptionEmailAction(emailService, logger);
 
 export const lambda: Handler = async (event: SQSEvent): Promise<void> => {
   const eventActions = event.Records.map(async (record) => {
-    const eventBody = JSON.parse(record.body).detail;
+    try {
+      const eventBody = JSON.parse(record.body).detail;
 
-    const { email, tweets } = Value.Decode(eventBodySchema, eventBody);
+      const { email, tweets } = Value.Decode(eventBodySchema, eventBody);
 
-    await action.execute({
-      email,
-      tweets,
-    });
+      await action.execute({
+        email,
+        tweets,
+      });
+    } catch (error) {
+      logger.error({
+        message: 'Error while processing event.',
+        error,
+        event,
+      });
+
+      throw error;
+    }
   });
 
   await Promise.all(eventActions);

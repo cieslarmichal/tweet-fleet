@@ -22,5 +22,14 @@ const logger = LoggerServiceFactory.create({
 const action = new SendUsersMessagesAction(userRepository, sqsClient, logger, config);
 
 export const lambda: Handler = async (): Promise<void> => {
-  await action.execute();
+  try {
+    await action.execute();
+  } catch (error) {
+    logger.error({
+      message: 'Error while processing event.',
+      error,
+    });
+
+    throw error;
+  }
 };

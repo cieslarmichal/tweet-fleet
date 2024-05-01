@@ -54,14 +54,24 @@ const eventBodySchema = Type.Object({
 
 export const lambda: Handler = async (event: SQSEvent): Promise<void> => {
   const eventActions = event.Records.map(async (record) => {
-    const eventBody = JSON.parse(record.body).detail;
+    try {
+      const eventBody = JSON.parse(record.body).detail;
 
-    const { email, userId } = Value.Decode(eventBodySchema, eventBody);
+      const { email, userId } = Value.Decode(eventBodySchema, eventBody);
 
-    await action.execute({
-      email,
-      userId,
-    });
+      await action.execute({
+        email,
+        userId,
+      });
+    } catch (error) {
+      logger.error({
+        message: 'Error while processing event.',
+        error,
+        event,
+      });
+
+      throw error;
+    }
   });
 
   await Promise.all(eventActions);
