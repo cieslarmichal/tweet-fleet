@@ -7,7 +7,12 @@ export class TweetTestFactory {
     const id = faker.string.uuid();
 
     return {
-      text: faker.lorem.sentence(),
+      text: faker.lorem.paragraphs(
+        faker.number.int({
+          min: 1,
+          max: 3,
+        }),
+      ),
       createdAt: faker.date.past().toISOString(),
       selfUrl: `https://twitter.com/${username}/status/${id}`,
       author: {
