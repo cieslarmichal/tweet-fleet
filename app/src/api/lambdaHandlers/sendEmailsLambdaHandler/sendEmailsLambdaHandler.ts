@@ -22,16 +22,12 @@ const eventBodySchema = Type.Object({
   email: Type.String(),
   tweets: Type.Array(
     Type.Object({
-      id: Type.String(),
       text: Type.String(),
       createdAt: Type.String(),
-      urls: Type.Array(Type.String()),
       selfUrl: Type.String(),
       author: Type.Object({
-        id: Type.String(),
         name: Type.String(),
         username: Type.String(),
-        profileImageUrl: Type.String(),
       }),
     }),
   ),
