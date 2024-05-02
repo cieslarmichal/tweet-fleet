@@ -79,6 +79,8 @@ export class ProcessorStack extends core.Stack {
 
     subscriptionsTable.grantReadData(collectTweetsLambda);
 
+    tweetsQueue.grantSendMessages(collectTweetsLambda);
+
     collectTweetsLambda.addEventSource(
       new SqsEventSource(usersQueue, {
         batchSize: 1,
