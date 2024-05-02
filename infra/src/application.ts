@@ -66,7 +66,6 @@ new ApiStack(app, 'ApiStack', {
   config,
   subscriptionsTable: databaseStack.subscriptionsTable,
   usersTable: databaseStack.usersTable,
-  redis: cacheStack.redis,
 });
 
 new ProcessorStack(app, 'ProcessorStack', {
