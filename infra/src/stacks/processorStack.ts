@@ -36,8 +36,8 @@ export class ProcessorStack extends core.Stack {
 
     const lambdaEnvironment = {
       ['SENDGRID_API_KEY']: config.sendGridApiKey,
-      ['USERS_SQS_URL']: config.sendGridApiKey,
-      ['TWEETS_SQS_URL']: config.sendGridApiKey,
+      ['USERS_SQS_URL']: usersQueue.queueUrl,
+      ['TWEETS_SQS_URL']: tweetsQueue.queueUrl,
       ['REDIS_HOST']: redis.attrRedisEndpointAddress,
       ['REDIS_PORT']: redis.attrRedisEndpointPort,
       ['TWITTER_API_KEY']: config.twitter.apiKey,
