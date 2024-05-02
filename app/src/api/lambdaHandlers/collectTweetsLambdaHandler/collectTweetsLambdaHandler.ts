@@ -48,7 +48,7 @@ const action = new SendSubscriptionTweetsMessagesAction(
 );
 
 const eventBodySchema = Type.Object({
-  userId: Type.String(),
+  id: Type.String(),
   email: Type.String(),
 });
 
@@ -57,7 +57,7 @@ export const lambda: Handler = async (event: SQSEvent): Promise<void> => {
     try {
       const eventBody = JSON.parse(record.body).detail;
 
-      const { email, userId } = Value.Decode(eventBodySchema, eventBody);
+      const { id: userId, email } = Value.Decode(eventBodySchema, eventBody);
 
       await action.execute({
         email,
