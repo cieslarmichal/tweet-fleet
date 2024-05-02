@@ -55,7 +55,7 @@ const eventBodySchema = Type.Object({
 export const lambda: Handler = async (event: SQSEvent): Promise<void> => {
   const eventActions = event.Records.map(async (record) => {
     try {
-      const eventBody = JSON.parse(record.body).detail;
+      const eventBody = JSON.parse(record.body);
 
       const { id: userId, email } = Value.Decode(eventBodySchema, eventBody);
 

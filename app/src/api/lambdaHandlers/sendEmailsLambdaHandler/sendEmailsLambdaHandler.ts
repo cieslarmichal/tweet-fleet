@@ -42,7 +42,7 @@ const action = new SendSubscriptionEmailAction(emailService, logger);
 export const lambda: Handler = async (event: SQSEvent): Promise<void> => {
   const eventActions = event.Records.map(async (record) => {
     try {
-      const eventBody = JSON.parse(record.body).detail;
+      const eventBody = JSON.parse(record.body);
 
       const { email, tweets } = Value.Decode(eventBodySchema, eventBody);
 
