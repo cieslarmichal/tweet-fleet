@@ -22,7 +22,7 @@ export class ApiStack extends core.Stack {
       ['USERS_SQS_URL']: 'dummy',
       ['TWEETS_SQS_URL']: 'dummy',
       ['REDIS_HOST']: 'dummy',
-      ['REDIS_PORT']: 'dummy',
+      ['REDIS_PORT']: '6379',
       ['TWITTER_API_KEY']: 'dummy',
       ['TWITTER_API_SECRET']: 'dummy',
       ['TWITTER_ACCESS_TOKEN']: 'dummy',
