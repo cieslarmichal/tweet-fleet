@@ -7,16 +7,12 @@ export class TweetTestFactory {
     const id = faker.string.uuid();
 
     return {
-      id,
       text: faker.lorem.sentence(),
       createdAt: faker.date.past().toISOString(),
-      urls: [faker.internet.url()],
       selfUrl: `https://twitter.com/${username}/status/${id}`,
       author: {
-        id: faker.string.uuid(),
         name: name || faker.person.fullName(),
         username,
-        profileImageUrl: faker.image.avatar(),
       },
     };
   }

@@ -39,13 +39,12 @@ export class SendSubscriptionEmailAction {
     const body = tweets
       .map((tweet) => {
         return `
-        Tweet URL: ${tweet.selfUrl}
-        Text: ${tweet.text}
-        Date: ${new Date(tweet.createdAt).toISOString()}
-        URLs: ${tweet.urls.join(', ')}
-      `;
+          <h2><a href="${tweet.selfUrl}">Tweet from ${new Date(tweet.createdAt).toLocaleString()}</a></h2>
+          <p>${tweet.text}</p>
+          <hr/>
+        `;
       })
-      .join('\n\n');
+      .join('');
 
     await this.emailService.sendEmail({
       toEmail: email,

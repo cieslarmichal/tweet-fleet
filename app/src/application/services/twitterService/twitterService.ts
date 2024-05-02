@@ -50,16 +50,12 @@ export class TwitterService {
 
   private mapToTweet(status: StatusesUserTimeline): Tweet {
     return {
-      id: status.id_str,
       text: status.full_text || status.text,
       createdAt: status.created_at,
-      urls: status.entities.urls.map((url) => url.expanded_url),
       selfUrl: `https://twitter.com/${status.user.screen_name}/status/${status.id_str}`,
       author: {
-        id: status.user.id_str,
         name: status.user.name,
         username: status.user.screen_name,
-        profileImageUrl: status.user.profile_image_url_https,
       },
     };
   }

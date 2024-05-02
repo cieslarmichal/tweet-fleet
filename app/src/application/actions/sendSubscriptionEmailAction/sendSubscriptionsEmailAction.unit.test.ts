@@ -45,13 +45,12 @@ describe('SendSubscriptionEmailAction', () => {
     const expectedBody = tweets
       .map(
         (tweet) => `
-        Tweet URL: ${tweet.selfUrl}
-        Text: ${tweet.text}
-        Date: ${new Date(tweet.createdAt).toISOString()}
-        URLs: ${tweet.urls.join(', ')}
-      `,
+          <h2><a href="${tweet.selfUrl}">Tweet from ${new Date(tweet.createdAt).toLocaleString()}</a></h2>
+          <p>${tweet.text}</p>
+          <hr/>
+        `,
       )
-      .join('\n\n');
+      .join('');
 
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({

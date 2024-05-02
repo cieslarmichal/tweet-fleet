@@ -2,7 +2,7 @@ import { beforeEach, expect, it, describe, afterEach } from 'vitest';
 
 import { LoginUserAction } from './loginUserAction.js';
 import { DynamoDbClientFactory } from '../../../common/dynamoDbClient.js';
-import { UnauthorizedAccessError } from '../../../common/errors/unathorizedAccessError.js';
+import { OperationNotValidError } from '../../../common/errors/operationNotValidError.js';
 import { LoggerServiceFactory } from '../../../common/loggerService.js';
 import { type Config, ConfigFactory } from '../../../config/config.js';
 import { UserRepository } from '../../../domain/repositories/userRepository/userRepository.js';
@@ -80,7 +80,7 @@ describe('LoginUserAction', () => {
         password,
       });
     } catch (error) {
-      expect(error instanceof UnauthorizedAccessError).toBe(true);
+      expect(error instanceof OperationNotValidError).toBe(true);
 
       return;
     }
@@ -99,7 +99,7 @@ describe('LoginUserAction', () => {
         password: invalidPassword,
       });
     } catch (error) {
-      expect(error instanceof UnauthorizedAccessError).toBe(true);
+      expect(error instanceof OperationNotValidError).toBe(true);
 
       return;
     }
