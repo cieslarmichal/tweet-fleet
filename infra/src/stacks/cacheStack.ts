@@ -1,5 +1,5 @@
 import * as core from 'aws-cdk-lib';
-import type * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elasticache from 'aws-cdk-lib/aws-elasticache';
 
 export interface CacheStackProps extends core.StackProps {
@@ -14,6 +14,8 @@ export class CacheStack extends core.Stack {
     super(scope, id, props);
 
     const { vpc, securityGroup } = props;
+
+    securityGroup.addIngressRule(ec2.Peer.ipv4('10.0.0.0/16'), ec2.Port.tcp(6379));
 
     const subnetGroup = new elasticache.CfnSubnetGroup(this, 'RedisSubnetGroup', {
       description: 'Subnet group for Redis',
